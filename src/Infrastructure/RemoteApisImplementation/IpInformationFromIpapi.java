@@ -1,6 +1,8 @@
-package Model;
+package Infrastructure.RemoteApisImplementation;
 
+import Interfaces.IpInformationInterface;
 import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 
 import java.io.IOException;
@@ -8,9 +10,10 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
 import java.util.List;
 
-public class IpInformationFromAbstractApi implements IpInformationInterface{
+public class IpInformationFromIpapi implements IpInformationInterface {
 
     private final String ip;
     private final String accessKey;
@@ -19,10 +22,10 @@ public class IpInformationFromAbstractApi implements IpInformationInterface{
 
 
     public static boolean handle(String url) {
-        return url.contains("ipgeolocation.abstractapi.com");
+        return url.contains("api.ipapi.com");
     }
 
-    public IpInformationFromAbstractApi(String ip, String accessKey) {
+    public IpInformationFromIpapi(String ip, String accessKey) {
         this.ip = ip;
         this.accessKey = accessKey;
     }
@@ -31,7 +34,7 @@ public class IpInformationFromAbstractApi implements IpInformationInterface{
 
         if(data.isEmpty()){
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("https://ipgeolocation.abstractapi.com/v1/?api_key=" + accessKey + "&ip_address=" + ip ))
+                    .uri(URI.create("http://api.ipapi.com/api/" + ip + "?access_key=" + accessKey ))
                     .method("GET", HttpRequest.BodyPublishers.noBody())
                     .build();
 
@@ -57,20 +60,29 @@ public class IpInformationFromAbstractApi implements IpInformationInterface{
     }
 
     public String retrieveCountryName() {
-        return getData().getString("country","").toString();
+        return getData().getString("","").toString();
     }
 
     public String retrieveCountryIsoCode() {
-        return getData().getString("country_code","").toString();
+        return getData().getString("","").toString();
     }
 
     @Override
     public List<String> retrieveCountryLanguages() {
-        return null;
+        getData().get("location").asObject().get("languages");
+
+        JsonArray languagesCollection = getData().get("location").asObject().get("languages").asArray();
+        ArrayList<String> languages = new ArrayList<>();
+
+        for (int i = 0; i <= languagesCollection.size() - 1; i++) {
+            languages.add(languagesCollection.get(i).asObject().getString("name", ""));
+        }
+
+        return languages;
     }
 
     public String retrieveCountryCurrency() {
-        return getData().get("currency").asObject().getString("currency_code", "");
+        return getData().get("currency").asObject().getString("", "");
 
     }
 
@@ -90,10 +102,10 @@ public class IpInformationFromAbstractApi implements IpInformationInterface{
     }
 
     public double retrieveCountryLatitude(){
-        return getData().getDouble("latitude", 0.00);
+        return getData().getDouble("", 0.00);
     }
     public double retrieveCountryLongitude(){
-        return getData().getDouble("longitude", 0.00);
+        return getData().getDouble("", 0.00);
     }
 
 }

@@ -1,10 +1,10 @@
 package Model;
 
+import Interfaces.IpInformationInterface;
 import com.eclipsesource.json.JsonObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 public class InformationProviderNotDefined implements IpInformationInterface {
     private final JsonObject defaultInformation;

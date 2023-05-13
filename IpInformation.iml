@@ -44,5 +44,6 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="mongodb.driver.sync" level="project" />
   </component>
 </module>

@@ -12,8 +12,9 @@ public class IpInformationRemotelyTests {
 
    @Test
     public void shouldRetrieveCountryName(){
-        IpInformationBuilder informationBuilder = IpInformationBuilder.basedOnConfiguration((new File("config.properties").getAbsolutePath()), "166.171.248.255");
-        informationBuilder.setCountryName();
+        IpInformationBuilder informationBuilder = IpInformationBuilder.basedOnConfiguration((new File("config.properties").getAbsolutePath()));
+       informationBuilder.setIp("166.171.248.255");
+       informationBuilder.setCountryName();
 
         IpInformation ipInformation = informationBuilder.build();
 
@@ -22,7 +23,8 @@ public class IpInformationRemotelyTests {
 
     @Test
     public void shouldRetrieveCountryIsoCode() {
-        IpInformationBuilder informationBuilder = IpInformationBuilder.basedOnConfiguration((new File("config.properties").getAbsolutePath()), "166.171.248.255");
+        IpInformationBuilder informationBuilder = IpInformationBuilder.basedOnConfiguration((new File("config.properties").getAbsolutePath()));
+        informationBuilder.setIp("166.171.248.255");
         informationBuilder.setCountryName();
         informationBuilder.setCountryIsoCode();
 
@@ -34,7 +36,8 @@ public class IpInformationRemotelyTests {
 
     @Test
     public void shouldRetrieveCountryCurrency() {
-        IpInformationBuilder informationBuilder = IpInformationBuilder.basedOnConfiguration((new File("config.properties").getAbsolutePath()), "166.171.248.255");
+        IpInformationBuilder informationBuilder = IpInformationBuilder.basedOnConfiguration((new File("config.properties").getAbsolutePath()));
+        informationBuilder.setIp("166.171.248.255");
         informationBuilder.setCountryName();
         informationBuilder.setCountryIsoCode();
         informationBuilder.setCountryCurrency();
@@ -50,6 +53,7 @@ public class IpInformationRemotelyTests {
   /*  @Test //TODO: ver como fijar el reloj
     public void shouldRetrieveCountryTimeZone() {
         IpInformationBuilder informationBuilder = IpInformationBuilder.basedOnConfiguration((new File("config.properties").getAbsolutePath()), "166.171.248.255");
+        informationBuilder.setIp("166.171.248.255");
         informationBuilder.setCountryName();
         informationBuilder.setCountryIsoCode();
         informationBuilder.setCountryCurrency();
@@ -66,7 +70,8 @@ public class IpInformationRemotelyTests {
     }*/
   @Test
   public void shouldRetrieveDistanceToBuenosAires() {
-      IpInformationBuilder informationBuilder = IpInformationBuilder.basedOnConfiguration((new File("config.properties").getAbsolutePath()), "166.171.248.255");
+      IpInformationBuilder informationBuilder = IpInformationBuilder.basedOnConfiguration((new File("config.properties").getAbsolutePath()));
+      informationBuilder.setIp("166.171.248.255");
       informationBuilder.setCountryName();
       informationBuilder.setCountryIsoCode();
       informationBuilder.setCountryCurrency();
@@ -84,7 +89,8 @@ public class IpInformationRemotelyTests {
   }
   @Test
   public void shouldRetrieveLanguages() {
-      IpInformationBuilder informationBuilder = IpInformationBuilder.basedOnConfiguration((new File("config.properties").getAbsolutePath()), "130.41.97.255");
+      IpInformationBuilder informationBuilder = IpInformationBuilder.basedOnConfiguration((new File("config.properties").getAbsolutePath()));
+      informationBuilder.setIp("166.171.248.255");
       informationBuilder.setCountryName();
       informationBuilder.setCountryIsoCode();
       informationBuilder.setCountryCurrency();
@@ -105,7 +111,8 @@ public class IpInformationRemotelyTests {
 
   @Test
   public void shouldRetrieveQuoteAgainstDollar() { //TODO: este valor varia con el tiempo, es un test que va a fallar
-      IpInformationBuilder informationBuilder = IpInformationBuilder.basedOnConfiguration((new File("config.properties").getAbsolutePath()), "130.41.97.255");
+      IpInformationBuilder informationBuilder = IpInformationBuilder.basedOnConfiguration((new File("config.properties").getAbsolutePath()));
+      informationBuilder.setIp("166.171.248.255");
       informationBuilder.setCountryName();
       informationBuilder.setCountryIsoCode();
       informationBuilder.setCountryCurrency();

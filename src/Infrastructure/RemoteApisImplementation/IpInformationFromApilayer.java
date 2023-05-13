@@ -1,7 +1,7 @@
-package Model;
+package Infrastructure.RemoteApisImplementation;
 
+import Interfaces.IpInformationInterface;
 import com.eclipsesource.json.Json;
-import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 
 import java.io.IOException;
@@ -9,23 +9,22 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.ArrayList;
 import java.util.List;
 
-public class IpInformationFromIpapi implements IpInformationInterface{
+public class IpInformationFromApilayer implements IpInformationInterface {
 
-    private final String ip;
+    private final String currencyCode;
     private final String accessKey;
     private int retries = 0;
     private JsonObject data = new JsonObject();
 
 
     public static boolean handle(String url) {
-        return url.contains("api.ipapi.com");
+        return url.contains("api.apilayer.com");
     }
 
-    public IpInformationFromIpapi(String ip, String accessKey) {
-        this.ip = ip;
+    public IpInformationFromApilayer(String currencyCode, String accessKey) {
+        this.currencyCode = currencyCode;
         this.accessKey = accessKey;
     }
 
@@ -33,7 +32,8 @@ public class IpInformationFromIpapi implements IpInformationInterface{
 
         if(data.isEmpty()){
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("http://api.ipapi.com/api/" + ip + "?access_key=" + accessKey ))
+                    .uri(URI.create("https://api.apilayer.com/fixer/latest?base="+ currencyCode ))
+                    .headers("apikey", accessKey)
                     .method("GET", HttpRequest.BodyPublishers.noBody())
                     .build();
 
@@ -68,16 +68,7 @@ public class IpInformationFromIpapi implements IpInformationInterface{
 
     @Override
     public List<String> retrieveCountryLanguages() {
-        getData().get("location").asObject().get("languages");
-
-        JsonArray languagesCollection = getData().get("location").asObject().get("languages").asArray();
-        ArrayList<String> languages = new ArrayList<>();
-
-        for (int i = 0; i <= languagesCollection.size() - 1; i++) {
-            languages.add(languagesCollection.get(i).asObject().getString("name", ""));
-        }
-
-        return languages;
+        return null;
     }
 
     public String retrieveCountryCurrency() {
@@ -97,14 +88,14 @@ public class IpInformationFromIpapi implements IpInformationInterface{
 
     @Override
     public double retrieveQuoteAgainstDollar() {
-        return 0.00;
+        return getData().get("rates").asObject().getDouble("USD", 0.00);
     }
 
     public double retrieveCountryLatitude(){
-        return getData().getDouble("", 0.00);
+        return getData().getDouble("latitude", 0.00);
     }
     public double retrieveCountryLongitude(){
-        return getData().getDouble("", 0.00);
+        return getData().getDouble("longitude", 0.00);
     }
 
 }

@@ -1,14 +1,20 @@
 package Model;
 
+import Infrastructure.RemoteApisImplementation.IpInformationFromAbstractApi;
+import Infrastructure.RemoteApisImplementation.IpInformationFromApilayer;
+import Infrastructure.RemoteApisImplementation.IpInformationFromIpapi;
+import Interfaces.IpInformationInterface;
 import com.eclipsesource.json.JsonObject;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 public class IpInformationBuilder {
-    private final String ip;
+    private String ip;
     private IpInformation ipInformation;
     private Properties propiedades = new Properties();
     private JsonObject defaultInformation;
@@ -25,21 +31,20 @@ public class IpInformationBuilder {
     private InformationProviderNotDefined informationProviderNotDefined;
     private IpInformationFromIpapi ipInformationFromIpapi;
     private IpInformationFromAbstractApi ipInformationFromAbstractApi;
+    private Map<String, IpInformationFromAbstractApi> ipsForAbstractApi = new HashMap<>();
     private IpInformationFromApilayer ipInformationFromApilayer;
     private IpInformationInterface ipInformationInterface;
 
-    public static IpInformationBuilder basedOnConfiguration(String configurationFileName, String ip){
+    public static IpInformationBuilder basedOnConfiguration(String configurationFileName){
 
-        return basedOnConfigurationOrByDefault(configurationFileName, DEFAULT_INFORMATION, ip);
+        return basedOnConfigurationOrByDefault(configurationFileName, DEFAULT_INFORMATION);
     }
 
-    public static IpInformationBuilder basedOnConfigurationOrByDefault(String configurationFileName, JsonObject defaultJson, String ip){
+    public static IpInformationBuilder basedOnConfigurationOrByDefault(String configurationFileName, JsonObject defaultJson){
 
-        return new IpInformationBuilder(configurationFileName, defaultJson, ip);
+        return new IpInformationBuilder(configurationFileName, defaultJson);
     }
-    private IpInformationBuilder(String configurationFileName, JsonObject defaultJson, String ip) {
-        this.ip = ip;
-
+    private IpInformationBuilder(String configurationFileName, JsonObject defaultJson) {
         try{
             propiedades.load(new FileReader(configurationFileName));
         }catch(IOException error){
@@ -91,7 +96,9 @@ public class IpInformationBuilder {
     }
 
     private IpInformationFromAbstractApi getipinformationfromAbstractapi() {
-        if(ipInformationFromAbstractApi == null)
+        if(ipsForAbstractApi.get(this.ip) != null)
+            ipInformationFromAbstractApi = ipsForAbstractApi.get(this.ip);
+        else
             ipInformationFromAbstractApi = new IpInformationFromAbstractApi(ip, propiedades.getProperty("ABSTRACTAPI_ACCESS_KEY"));
 
         return ipInformationFromAbstractApi;
@@ -140,6 +147,10 @@ public class IpInformationBuilder {
 
     public void setQuoteAgainstDollar() {
         this.quoteAgainstDollar = getProviderFor("QUOTE_PROVIDER").retrieveQuoteAgainstDollar();
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
     }
 
 /*

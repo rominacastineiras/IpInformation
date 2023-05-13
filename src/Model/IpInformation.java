@@ -7,7 +7,9 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class IpInformation{
     String ip;
@@ -92,10 +94,13 @@ public class IpInformation{
     }
 
     public boolean distanceToBuenosAiresIs(double distanceToBuenosAires) {
+        return distanceToBuenosAires() == distanceToBuenosAires;
+    }
+
+    private double distanceToBuenosAires() {
         double buenosAiresLatitude = -34.61315;
         double buenosAiresLongitude = -58.37723;
-
-        return this.distanceInKm(this.latitude, this.longitude, buenosAiresLatitude, buenosAiresLongitude) == distanceToBuenosAires;
+        return this.distanceInKm(this.latitude, this.longitude, buenosAiresLatitude, buenosAiresLongitude);
     }
 
     public boolean languagesAre(List<String> languages) {
@@ -104,5 +109,21 @@ public class IpInformation{
 
     public boolean quoteAgainstDollarIs(double quote) {
         return this.quoteAgainstDollar == quote;
+    }
+
+    public Map<String, String> result() {
+        Map<String, String> result = new HashMap<>();
+
+        result.put("countryName", countryName);
+        result.put("countryIsoCode", countryIsoCode);
+        result.put("currency", currency);
+        result.put("distanceToBuenosAires", String.valueOf(distanceToBuenosAires()));
+        result.put("timestamp", "timestamp"); //TODO: Completar
+        result.put("languages", languages.toString());
+        result.put("quoteAgainstDollar", String.valueOf(quoteAgainstDollar));
+        result.put("countryName", countryName);
+
+        return result;
+
     }
 }

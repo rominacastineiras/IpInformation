@@ -1,5 +1,6 @@
-package Model;
+package Infrastructure.RemoteApisImplementation;
 
+import Interfaces.IpInformationInterface;
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
 
@@ -10,20 +11,20 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.List;
 
-public class IpInformationFromApilayer implements IpInformationInterface{
+public class IpInformationFromAbstractApi implements IpInformationInterface {
 
-    private final String currencyCode;
+    private final String ip;
     private final String accessKey;
     private int retries = 0;
     private JsonObject data = new JsonObject();
 
 
     public static boolean handle(String url) {
-        return url.contains("api.apilayer.com");
+        return url.contains("ipgeolocation.abstractapi.com");
     }
 
-    public IpInformationFromApilayer(String currencyCode, String accessKey) {
-        this.currencyCode = currencyCode;
+    public IpInformationFromAbstractApi(String ip, String accessKey) {
+        this.ip = ip;
         this.accessKey = accessKey;
     }
 
@@ -31,8 +32,7 @@ public class IpInformationFromApilayer implements IpInformationInterface{
 
         if(data.isEmpty()){
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("https://api.apilayer.com/fixer/latest?base="+ currencyCode ))
-                    .headers("apikey", accessKey)
+                    .uri(URI.create("https://ipgeolocation.abstractapi.com/v1/?api_key=" + accessKey + "&ip_address=" + ip ))
                     .method("GET", HttpRequest.BodyPublishers.noBody())
                     .build();
 
@@ -58,11 +58,11 @@ public class IpInformationFromApilayer implements IpInformationInterface{
     }
 
     public String retrieveCountryName() {
-        return getData().getString("","").toString();
+        return getData().getString("country","").toString();
     }
 
     public String retrieveCountryIsoCode() {
-        return getData().getString("","").toString();
+        return getData().getString("country_code","").toString();
     }
 
     @Override
@@ -71,7 +71,7 @@ public class IpInformationFromApilayer implements IpInformationInterface{
     }
 
     public String retrieveCountryCurrency() {
-        return getData().get("currency").asObject().getString("", "");
+        return getData().get("currency").asObject().getString("currency_code", "");
 
     }
 
@@ -87,7 +87,7 @@ public class IpInformationFromApilayer implements IpInformationInterface{
 
     @Override
     public double retrieveQuoteAgainstDollar() {
-        return getData().get("rates").asObject().getDouble("USD", 0.00);
+        return 0.00;
     }
 
     public double retrieveCountryLatitude(){

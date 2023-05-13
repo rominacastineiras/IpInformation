@@ -1,10 +1,11 @@
 package Model;
 
+import Interfaces.IpInformationInterface;
 import com.eclipsesource.json.JsonObject;
 
 import java.util.List;
 
-public class IpInformationFromJson implements IpInformationInterface{
+public class IpInformationFromJson implements IpInformationInterface {
 
     private final JsonObject data;
 
