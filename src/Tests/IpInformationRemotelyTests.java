@@ -12,7 +12,7 @@ public class IpInformationRemotelyTests {
 
    @Test
     public void shouldRetrieveCountryName(){
-        IpInformationBuilder informationBuilder = IpInformationBuilder.basedOnConfiguration((new File("config.properties").getAbsolutePath()));
+       IpInformationBuilder informationBuilder = IpInformationBuilder.basedOnConfiguration((new File("config.properties").getAbsolutePath()));
        informationBuilder.setIp("166.171.248.255");
        informationBuilder.setCountryName();
 
@@ -84,13 +84,13 @@ public class IpInformationRemotelyTests {
       Assertions.assertTrue(ipInformation.countryCurrencyIs("USD"));
       //                informationBuilder.setCountryTimeZone(); timezone.current_time
 
-      Assertions.assertTrue(ipInformation.distanceToBuenosAiresIs(9017.196853274321));
+      Assertions.assertTrue(ipInformation.distanceToBuenosAiresIs(9017));
 
   }
   @Test
   public void shouldRetrieveLanguages() {
       IpInformationBuilder informationBuilder = IpInformationBuilder.basedOnConfiguration((new File("config.properties").getAbsolutePath()));
-      informationBuilder.setIp("166.171.248.255");
+      informationBuilder.setIp("130.41.97.255");
       informationBuilder.setCountryName();
       informationBuilder.setCountryIsoCode();
       informationBuilder.setCountryCurrency();
@@ -104,7 +104,7 @@ public class IpInformationRemotelyTests {
       Assertions.assertTrue(ipInformation.countryCurrencyIs("ARS"));
       //                informationBuilder.setCountryTimeZone(); timezone.current_time
 
-      Assertions.assertTrue(ipInformation.distanceToBuenosAiresIs(0.3728882721544832));
+      Assertions.assertTrue(ipInformation.distanceToBuenosAiresIs(0));
       Assertions.assertTrue(ipInformation.languagesAre(Arrays.asList("Spanish","Guarani")));
 
   }
@@ -122,14 +122,14 @@ public class IpInformationRemotelyTests {
       informationBuilder.setQuoteAgainstDollar();
 
       IpInformation ipInformation = informationBuilder.build();
-      Assertions.assertTrue(ipInformation.countryNameIs("Argentina"));
-      Assertions.assertTrue(ipInformation.countryIsoCodeIs("AR"));
-      Assertions.assertTrue(ipInformation.countryCurrencyIs("ARS"));
+      Assertions.assertTrue(ipInformation.countryNameIs("United States"));
+      Assertions.assertTrue(ipInformation.countryIsoCodeIs("US"));
+      Assertions.assertTrue(ipInformation.countryCurrencyIs("USD"));
       //                informationBuilder.setCountryTimeZone(); timezone.current_time
 
-      Assertions.assertTrue(ipInformation.distanceToBuenosAiresIs(0.3728882721544832));
-      Assertions.assertTrue(ipInformation.languagesAre(Arrays.asList("Spanish","Guarani")));
-      Assertions.assertTrue(ipInformation.quoteAgainstDollarIs(0.004398));
+      Assertions.assertTrue(ipInformation.distanceToBuenosAiresIs(9017));
+      Assertions.assertTrue(ipInformation.languagesAre(Arrays.asList("English")));
+      Assertions.assertTrue(ipInformation.quoteAgainstDollarIs(1));
 
   }
 

@@ -34,6 +34,8 @@ public class IpInformationBuilder {
     private Map<String, IpInformationFromAbstractApi> ipsForAbstractApi = new HashMap<>();
     private IpInformationFromApilayer ipInformationFromApilayer;
     private IpInformationInterface ipInformationInterface;
+    private Map<String, IpInformationFromIpapi>  ipsForIpapi = new HashMap<>();
+    private Map<String, IpInformationFromApilayer> ipsForApilayer = new HashMap<>();
 
     public static IpInformationBuilder basedOnConfiguration(String configurationFileName){
 
@@ -83,24 +85,33 @@ public class IpInformationBuilder {
     }
 
     private IpInformationFromApilayer getIpInformationFromApilayer() {
-        if(ipInformationFromApilayer == null)
-            ipInformationFromApilayer = new IpInformationFromApilayer(currency, propiedades.getProperty("APILAYER_KEY"));
-
+        if(ipsForApilayer.get(this.currency) != null)
+            ipInformationFromApilayer = ipsForApilayer.get(this.currency);
+        else {
+            ipInformationFromApilayer = new IpInformationFromApilayer(this.currency, propiedades.getProperty("APILAYER_KEY"));
+            ipsForApilayer.put(this.currency, ipInformationFromApilayer);
+        }
         return ipInformationFromApilayer;
+        
     }
     private IpInformationFromIpapi getIpInformationFromIpapi() {
-        if(ipInformationFromIpapi == null)
+        if(ipsForIpapi.get(this.ip) != null)
+            ipInformationFromIpapi = ipsForIpapi.get(this.ip);
+        else {
             ipInformationFromIpapi = new IpInformationFromIpapi(ip, propiedades.getProperty("IPAPI_ACCESS_KEY"));
-
+            ipsForIpapi.put(this.ip, ipInformationFromIpapi);
+        }
         return ipInformationFromIpapi;
+        
     }
 
     private IpInformationFromAbstractApi getipinformationfromAbstractapi() {
         if(ipsForAbstractApi.get(this.ip) != null)
             ipInformationFromAbstractApi = ipsForAbstractApi.get(this.ip);
-        else
+        else {
             ipInformationFromAbstractApi = new IpInformationFromAbstractApi(ip, propiedades.getProperty("ABSTRACTAPI_ACCESS_KEY"));
-
+            ipsForAbstractApi.put(this.ip, ipInformationFromAbstractApi);
+        }
         return ipInformationFromAbstractApi;
     }
     private InformationProviderNotDefined getInformationProviderNotDefined() {

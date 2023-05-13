@@ -20,6 +20,7 @@ public class IpInformationFromIpapi implements IpInformationInterface {
     private int retries = 0;
     private JsonObject data = new JsonObject();
 
+    private static final String NODATA = "No Data";
 
     public static boolean handle(String url) {
         return url.contains("api.ipapi.com");
@@ -60,11 +61,11 @@ public class IpInformationFromIpapi implements IpInformationInterface {
     }
 
     public String retrieveCountryName() {
-        return getData().getString("","").toString();
+        return getData().getString("country_name","").toString();
     }
 
     public String retrieveCountryIsoCode() {
-        return getData().getString("","").toString();
+        return getData().getString("country_code","").toString();
     }
 
     @Override
@@ -82,18 +83,13 @@ public class IpInformationFromIpapi implements IpInformationInterface {
     }
 
     public String retrieveCountryCurrency() {
-        return getData().get("currency").asObject().getString("", "");
+        return NODATA;
 
     }
 
     @Override
     public String retrieveCountryTimeZone() {
-        return null;
-    }
-
-    @Override
-    public String retrieveCountryDistanceToBuenosAires() {
-        return null;
+        return NODATA;
     }
 
     @Override
@@ -102,10 +98,10 @@ public class IpInformationFromIpapi implements IpInformationInterface {
     }
 
     public double retrieveCountryLatitude(){
-        return getData().getDouble("", 0.00);
+        return getData().getDouble("latitude", 0.00);
     }
     public double retrieveCountryLongitude(){
-        return getData().getDouble("", 0.00);
+        return getData().getDouble("longitude", 0.00);
     }
 
 }

@@ -12,7 +12,6 @@ public interface IpInformationInterface {
     String retrieveCountryCurrency();
     String retrieveCountryTimeZone();
 
-    String retrieveCountryDistanceToBuenosAires();
 
     double retrieveQuoteAgainstDollar();
 

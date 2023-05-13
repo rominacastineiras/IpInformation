@@ -26,7 +26,7 @@ public class IpInformationSystem {
         //        builder.setCountryTimezone();
         builder.setDistanceToBuenosAires();
         builder.setLanguages();
-      //  builder.setQuoteAgainstDollar();
+        builder.setQuoteAgainstDollar();
 
         IpInformation ipInformation = builder.build();
 

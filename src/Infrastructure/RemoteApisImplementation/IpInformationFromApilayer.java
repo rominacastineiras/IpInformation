@@ -9,6 +9,8 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class IpInformationFromApilayer implements IpInformationInterface {
@@ -17,6 +19,8 @@ public class IpInformationFromApilayer implements IpInformationInterface {
     private final String accessKey;
     private int retries = 0;
     private JsonObject data = new JsonObject();
+    private static final String NODATA = "No Data";
+
 
 
     public static boolean handle(String url) {
@@ -59,31 +63,30 @@ public class IpInformationFromApilayer implements IpInformationInterface {
     }
 
     public String retrieveCountryName() {
-        return getData().getString("","").toString();
+        return NODATA;
     }
 
     public String retrieveCountryIsoCode() {
-        return getData().getString("","").toString();
+        return NODATA;
     }
 
     @Override
     public List<String> retrieveCountryLanguages() {
-        return null;
+        return new ArrayList<>(Collections.singleton(NODATA));
     }
 
     public String retrieveCountryCurrency() {
-        return getData().get("currency").asObject().getString("", "");
-
+        return NODATA;
     }
 
     @Override
     public String retrieveCountryTimeZone() {
-        return null;
+        return NODATA;
     }
 
     @Override
     public String retrieveCountryDistanceToBuenosAires() {
-        return null;
+        return NODATA;
     }
 
     @Override

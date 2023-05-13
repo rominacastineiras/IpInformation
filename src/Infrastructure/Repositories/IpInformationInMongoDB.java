@@ -1,13 +1,11 @@
 package Infrastructure.Repositories;
 
-import Infrastructure.RemoteApisImplementation.IpInformationFromAbstractApi;
 import Interfaces.IpInformationRespositoryInterface;
 import Model.IpInformation;
 import com.mongodb.client.*;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
-import org.junit.jupiter.api.Assertions;
 
 import java.io.File;
 import java.io.FileReader;

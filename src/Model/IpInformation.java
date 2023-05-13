@@ -97,10 +97,10 @@ public class IpInformation{
         return distanceToBuenosAires() == distanceToBuenosAires;
     }
 
-    private double distanceToBuenosAires() {
+    private int distanceToBuenosAires() {
         double buenosAiresLatitude = -34.61315;
         double buenosAiresLongitude = -58.37723;
-        return this.distanceInKm(this.latitude, this.longitude, buenosAiresLatitude, buenosAiresLongitude);
+        return (int)this.distanceInKm(this.latitude, this.longitude, buenosAiresLatitude, buenosAiresLongitude);
     }
 
     public boolean languagesAre(List<String> languages) {

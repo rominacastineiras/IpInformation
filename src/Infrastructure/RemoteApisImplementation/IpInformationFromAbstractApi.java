@@ -9,10 +9,13 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class IpInformationFromAbstractApi implements IpInformationInterface {
 
+    private static final String NODATA = "No Data";
     private final String ip;
     private final String accessKey;
     private int retries = 0;
@@ -67,7 +70,7 @@ public class IpInformationFromAbstractApi implements IpInformationInterface {
 
     @Override
     public List<String> retrieveCountryLanguages() {
-        return null;
+        return new ArrayList<>(Collections.singleton(NODATA));
     }
 
     public String retrieveCountryCurrency() {
@@ -77,12 +80,7 @@ public class IpInformationFromAbstractApi implements IpInformationInterface {
 
     @Override
     public String retrieveCountryTimeZone() {
-        return null;
-    }
-
-    @Override
-    public String retrieveCountryDistanceToBuenosAires() {
-        return null;
+        return getData().get("timezone").asObject().getString("current_time", "");
     }
 
     @Override
