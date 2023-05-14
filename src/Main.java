@@ -3,6 +3,7 @@ import Model.IpInformationBuilder;
 import Model.IpInformationSystem;
 import Model.PeriodicalRespositoryProcess;
 import com.eclipsesource.json.Json;
+import com.rabbitmq.client.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,10 +11,11 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.concurrent.TimeoutException;
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, TimeoutException {
         IpInformationBuilder informationBuilder = IpInformationBuilder.basedOnConfiguration((new File("config.properties").getAbsolutePath()));
         IpInformationSystem system = new IpInformationSystem(new IpInformationInMongoDB(), informationBuilder);
 
@@ -40,5 +42,7 @@ public class Main {
 
         System.out.println("Última actualización de estadísticas: " + system.lastPersistedIpTimestamp());
 
-}
+
+    }
+
 }

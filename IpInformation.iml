@@ -45,5 +45,6 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="mongodb.driver.sync" level="project" />
+    <orderEntry type="library" name="rabbitmq.amqp.client" level="project" />
   </component>
 </module>

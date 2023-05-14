@@ -2,6 +2,7 @@ package Infrastructure.Repositories;
 
 import Interfaces.IpInformationRespositoryInterface;
 import Model.IpInformation;
+import com.eclipsesource.json.JsonObject;
 import com.mongodb.client.*;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -10,9 +11,9 @@ import org.bson.types.ObjectId;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.*;
 
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Sorts.ascending;
@@ -98,6 +99,17 @@ public class IpInformationInMongoDB  implements IpInformationRespositoryInterfac
         return result.get("timestamp").toString();
     }
 
+    public void saveFromJson(JsonObject object){
+        save(new IpInformation(
+                object.getString("countryName",""),
+                object.getString("countryIsoCode",""),
+                object.getString("currency",""),
+                object.getDouble("latitude",0.00),
+                object.getDouble("longitude",0.00),
+                new ArrayList<>(Collections.singleton(object.getString("languages", ""))),
+                object.getDouble("quoteAgainstDollar",0.00)
+        ));
+    }
     @Override
     public void save(IpInformation ipInformation) {
 

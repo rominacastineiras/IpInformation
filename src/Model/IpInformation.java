@@ -1,6 +1,8 @@
 package Model;
 
 import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonArray;
+import com.eclipsesource.json.JsonObject;
 
 import java.io.IOException;
 import java.net.URI;
@@ -8,15 +10,13 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class IpInformation{
-    private final LocalDateTime timestamp;
+    private LocalDateTime timestamp = LocalDateTime.now();
     String ip;
     IpInformationBuilder informationBuilder;
-    private final String countryName;
+    private String countryName = "";
     private String countryIsoCode;
     private String currency;
     private double longitude;
@@ -130,5 +130,18 @@ public class IpInformation{
 
         return result;
 
+    }
+
+    public JsonObject toJson(){
+        JsonObject json = new JsonObject().add("countryName", countryName)
+                        .add("countryIsoCode", countryIsoCode)
+                .add("currency",currency)
+                .add("latitude", latitude)
+                .add("longitude", longitude)
+                .add("languages", languages.toString())
+                .add("quoteAgainstDollar", quoteAgainstDollar);
+
+
+        return  json.asObject();
     }
 }

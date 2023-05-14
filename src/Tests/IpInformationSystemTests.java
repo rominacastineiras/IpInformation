@@ -17,13 +17,14 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.TimeoutException;
 
 import static java.lang.Double.parseDouble;
 import static java.lang.Integer.parseInt;
 
 public class IpInformationSystemTests {
     @Test
-    public void onlyOneQueryResult(){
+    public void onlyOneQueryResult() throws IOException, TimeoutException {
         cleanDataBase();
         IpInformationBuilder informationBuilder = IpInformationBuilder.basedOnConfiguration((new File("config.properties").getAbsolutePath()));
         IpInformationSystem system = new IpInformationSystem(new IpInformationInMemory(), informationBuilder);
@@ -45,7 +46,7 @@ public class IpInformationSystemTests {
     }
 
     @Test
-    public void onlyOneQueryStatistics(){
+    public void onlyOneQueryStatistics() throws IOException, TimeoutException {
         cleanDataBase();
 
         IpInformationBuilder informationBuilder = IpInformationBuilder.basedOnConfiguration((new File("config.properties").getAbsolutePath()));
@@ -77,7 +78,7 @@ public class IpInformationSystemTests {
     }
 
     @Test
-    public void twoEqualQueryResultsStatistics(){
+    public void twoEqualQueryResultsStatistics() throws IOException, TimeoutException {
         cleanDataBase();
 
         IpInformationBuilder informationBuilder = IpInformationBuilder.basedOnConfiguration((new File("config.properties").getAbsolutePath()));
@@ -112,7 +113,7 @@ public class IpInformationSystemTests {
     }
 
     @Test
-    public void twoDifferentQueryResultsStatistics(){
+    public void twoDifferentQueryResultsStatistics() throws IOException, TimeoutException {
         cleanDataBase();
 
         IpInformationBuilder informationBuilder = IpInformationBuilder.basedOnConfiguration((new File("config.properties").getAbsolutePath()));

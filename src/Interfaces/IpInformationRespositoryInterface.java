@@ -1,6 +1,7 @@
 package Interfaces;
 
 import Model.IpInformation;
+import com.eclipsesource.json.JsonObject;
 
 import java.util.Map;
 
@@ -16,4 +17,6 @@ public interface IpInformationRespositoryInterface {
     Map<String, String> getAverageDistance();
 
     String lastPersistedIpTimestamp();
+
+    void saveFromJson(JsonObject object);
 }

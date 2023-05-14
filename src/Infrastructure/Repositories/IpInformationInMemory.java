@@ -2,6 +2,7 @@ package Infrastructure.Repositories;
 
 import Interfaces.IpInformationRespositoryInterface;
 import Model.IpInformation;
+import com.eclipsesource.json.JsonObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,5 +50,10 @@ public class IpInformationInMemory implements IpInformationRespositoryInterface 
     public String lastPersistedIpTimestamp() {
 
         return null;
+    }
+
+    @Override
+    public void saveFromJson(JsonObject object) {
+
     }
 }
