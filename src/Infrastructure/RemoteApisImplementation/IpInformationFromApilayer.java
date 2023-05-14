@@ -34,7 +34,7 @@ public class IpInformationFromApilayer implements IpInformationInterface {
 
     private JsonObject getData() {
 
-        if(data.isEmpty()){
+        if(data.isEmpty() && currencyCode != NODATA){
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create("https://api.apilayer.com/fixer/latest?base="+ currencyCode ))
                     .headers("apikey", accessKey)
@@ -81,11 +81,6 @@ public class IpInformationFromApilayer implements IpInformationInterface {
 
     @Override
     public String retrieveCountryTimeZone() {
-        return NODATA;
-    }
-
-    @Override
-    public String retrieveCountryDistanceToBuenosAires() {
         return NODATA;
     }
 

@@ -5,6 +5,7 @@ import Infrastructure.Repositories.IpInformationInMongoDB;
 import Model.IpInformation;
 import Model.IpInformationBuilder;
 import Model.IpInformationSystem;
+import Model.PeriodicalRespositoryProcess;
 import com.mongodb.client.*;
 import org.bson.Document;
 import org.junit.Test;
@@ -43,38 +44,19 @@ public class IpInformationSystemTests {
 
     }
 
-    private void cleanDataBase() {
-
-        Properties propiedades = new Properties();
-        try{
-            propiedades.load(new FileReader(new File("config.properties").getAbsolutePath()));
-        }catch(IOException error){
-        }
-
-        String userName = (String) propiedades.getOrDefault("DB_USERNAME", "");
-        String password = (String) propiedades.getOrDefault("DB_PASSWORD", "");
-
-        MongoClient mongoClient = MongoClients.create("mongodb+srv://" + userName + ":" + password + "@cluster0.xok7qpl.mongodb.net/cafeDB");
-        MongoDatabase database = mongoClient.getDatabase("cafeDB"); //TODO: cambiar nombre
-        MongoCollection<Document> collection = database.getCollection("IpInformation");
-        FindIterable<Document> results = collection.find();
-        MongoCursor<Document> cursor = results.iterator();
-
-
-        while (cursor.hasNext()) {
-            collection.deleteOne(cursor.next());
-        }
-    }
-
     @Test
     public void onlyOneQueryStatistics(){
         cleanDataBase();
 
         IpInformationBuilder informationBuilder = IpInformationBuilder.basedOnConfiguration((new File("config.properties").getAbsolutePath()));
         IpInformationSystem system = new IpInformationSystem(new IpInformationInMongoDB(), informationBuilder);
+        new PeriodicalRespositoryProcess(system).start();
 
         system.newQueryFor("130.41.97.255");
-
+        try{
+            Thread.sleep(4000);
+        } catch (InterruptedException e) {
+        }
         Map<String, String> statistics = system.getMostFarCountry();
 
         Assertions.assertTrue(statistics.get("country_name").equals("Argentina"));
@@ -100,9 +82,15 @@ public class IpInformationSystemTests {
 
         IpInformationBuilder informationBuilder = IpInformationBuilder.basedOnConfiguration((new File("config.properties").getAbsolutePath()));
         IpInformationSystem system = new IpInformationSystem(new IpInformationInMongoDB(), informationBuilder);
+        new PeriodicalRespositoryProcess(system).start();
 
         system.newQueryFor("130.41.97.255");
         system.newQueryFor("130.41.97.255");
+
+        try{
+            Thread.sleep(4000);
+        } catch (InterruptedException e) {
+        }
 
         Map<String, String> statistics = system.getMostFarCountry();
 
@@ -129,10 +117,15 @@ public class IpInformationSystemTests {
 
         IpInformationBuilder informationBuilder = IpInformationBuilder.basedOnConfiguration((new File("config.properties").getAbsolutePath()));
         IpInformationSystem system = new IpInformationSystem(new IpInformationInMongoDB(), informationBuilder);
+        new PeriodicalRespositoryProcess(system).start();
 
         system.newQueryFor("130.41.97.255");
         system.newQueryFor("192.199.248.75");
 
+        try{
+            Thread.sleep(4000);
+        } catch (InterruptedException e) {
+        }
         Map<String, String> statistics = system.getMostFarCountry();
 
         Assertions.assertTrue(statistics.get("country_name").equals("United States"));
@@ -152,4 +145,27 @@ public class IpInformationSystemTests {
 
     }
 
+
+    private void cleanDataBase() {
+
+        Properties propiedades = new Properties();
+        try{
+            propiedades.load(new FileReader(new File("config.properties").getAbsolutePath()));
+        }catch(IOException error){
+        }
+
+        String userName = (String) propiedades.getOrDefault("DB_USERNAME", "");
+        String password = (String) propiedades.getOrDefault("DB_PASSWORD", "");
+
+        MongoClient mongoClient = MongoClients.create("mongodb+srv://" + userName + ":" + password + "@cluster0.xok7qpl.mongodb.net/cafeDB");
+        MongoDatabase database = mongoClient.getDatabase("cafeDB"); //TODO: cambiar nombre
+        MongoCollection<Document> collection = database.getCollection("IpInformation");
+        FindIterable<Document> results = collection.find();
+        MongoCursor<Document> cursor = results.iterator();
+
+
+        while (cursor.hasNext()) {
+            collection.deleteOne(cursor.next());
+        }
+    }
 }

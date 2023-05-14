@@ -15,12 +15,12 @@ public class InformationProviderNotDefined implements IpInformationInterface {
 
     @Override
     public String retrieveCountryName() {
-        return this.defaultInformation.getString("country_name", "Not defined");
+        return this.defaultInformation.getString("countryName", "Not defined");
     }
 
     @Override
     public String retrieveCountryIsoCode() {
-        return this.defaultInformation.getString("alpha3Code", "Not defined");
+        return this.defaultInformation.getString("countryIsoCode", "Not defined");
     }
 
     @Override
@@ -37,12 +37,6 @@ public class InformationProviderNotDefined implements IpInformationInterface {
     public String retrieveCountryTimeZone() {
 
         return this.defaultInformation.getString("timeZone", "Not defined");
-
-    }
-
-    @Override
-    public String retrieveCountryDistanceToBuenosAires() {
-        return this.defaultInformation.getString("distance", "Not defined"); //TODO: Borrar
 
     }
 

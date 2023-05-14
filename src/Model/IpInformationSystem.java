@@ -3,12 +3,16 @@ package Model;
 import Interfaces.IpInformationRespositoryInterface;
 import com.eclipsesource.json.JsonObject;
 
+import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
+import java.util.List;
 import java.util.Map;
 
 public class IpInformationSystem {
 
     private final IpInformationRespositoryInterface repository;
     private Map<String, String> result;
+    private List<IpInformation> resultsToPersist = new ArrayList<>();
     private final IpInformationBuilder builder;
 
     public IpInformationSystem(IpInformationRespositoryInterface repository, IpInformationBuilder builder){
@@ -30,7 +34,7 @@ public class IpInformationSystem {
 
         IpInformation ipInformation = builder.build();
 
-        repository.save(ipInformation);
+        resultsToPersist.add(ipInformation);
 
         result = ipInformation.result();
     }
@@ -49,5 +53,19 @@ public class IpInformationSystem {
 
     public Map<String, String> getAverageDistance() {
         return repository.getAverageDistance();
+    }
+
+    public void persistNewResults() {
+        resultsToPersist.forEach(resultToPersist ->
+
+                 repository.save(resultToPersist)
+        );
+
+        resultsToPersist = new ArrayList<>();
+
+    }
+
+    public String lastPersistedIpTimestamp() {
+        return repository.lastPersistedIpTimestamp();
     }
 }

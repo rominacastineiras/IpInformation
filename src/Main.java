@@ -1,6 +1,7 @@
 import Infrastructure.Repositories.IpInformationInMongoDB;
 import Model.IpInformationBuilder;
 import Model.IpInformationSystem;
+import Model.PeriodicalRespositoryProcess;
 import com.eclipsesource.json.Json;
 
 import java.io.File;
@@ -18,12 +19,26 @@ public class Main {
 
 
         system.newQueryFor(args[0]);
-        System.out.println(system.showResult());
+        new PeriodicalRespositoryProcess(system).start();
+        try{
+            Thread.sleep(4000);
+        } catch (InterruptedException e) {
+        }
 
-        System.out.println(system.getMostFarCountry());
+        try{
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+        }
 
-        System.out.println(system.getLeastFarCountry());
+        System.out.println("Resultado de consulta: " + system.showResult());
 
-        System.out.println(system.getAverageDistance());
+        System.out.println("Distancia más lejana: " + system.getMostFarCountry());
+
+        System.out.println("Distancia más cercana: " + system.getLeastFarCountry());
+
+        System.out.println("Distancia promedio: " + system.getAverageDistance());
+
+        System.out.println("Última actualización de estadísticas: " + system.lastPersistedIpTimestamp());
+
 }
 }

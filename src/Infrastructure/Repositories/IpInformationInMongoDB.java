@@ -46,10 +46,14 @@ public class IpInformationInMongoDB  implements IpInformationRespositoryInterfac
        Document result = collection.find().sort(descending("distance")).first();
        Map<String, String> map = new HashMap<>();
 
-        map.put("country_name", (String) result.get("country_name"));
-        map.put("country_code", (String) result.get("country_code"));
-        map.put("distance", (String) result.get("distance"));
-        map.put("invocations", (String) result.get("invocations"));
+       if(result != null) {
+           map.put("country_name", (String) result.get("country_name"));
+           map.put("country_code", (String) result.get("country_code"));
+           map.put("distance", (String) result.get("distance"));
+           map.put("invocations", (String) result.get("invocations"));
+       }else{
+           map.put("Info", "Todavía no hay estadísticas, consulte más tarde");
+       }
 
        return map;
     }
@@ -59,11 +63,14 @@ public class IpInformationInMongoDB  implements IpInformationRespositoryInterfac
         Document result = collection.find().sort(ascending("distance")).first();
         Map<String, String> map = new HashMap<>();
 
-        map.put("country_name", (String) result.get("country_name"));
-        map.put("country_code", (String) result.get("country_code"));
-        map.put("distance", (String) result.get("distance"));
-        map.put("invocations", (String) result.get("invocations"));
-
+        if(result != null) {
+           map.put("country_name", (String) result.get("country_name"));
+            map.put("country_code", (String) result.get("country_code"));
+            map.put("distance", (String) result.get("distance"));
+            map.put("invocations", (String) result.get("invocations"));
+        }else{
+            map.put("Info", "Todavía no hay estadísticas, consulte más tarde");
+        }
         return map;    }
 
     @Override
@@ -83,6 +90,12 @@ public class IpInformationInMongoDB  implements IpInformationRespositoryInterfac
         map.put("averageDistance",String.valueOf(operando / divisor));
 
         return map;
+    }
+
+    @Override
+    public String lastPersistedIpTimestamp() {
+        Document result = collection.find().sort(descending("timestamp")).first();
+        return result.get("timestamp").toString();
     }
 
     @Override
@@ -108,7 +121,8 @@ public class IpInformationInMongoDB  implements IpInformationRespositoryInterfac
             someIpInformation.append("country_name", result.get("countryName"))
                     .append("country_code", result.get("countryIsoCode"))
                     .append("distance", result.get("distanceToBuenosAires"))
-                    .append("invocations", String.valueOf(invocations));
+                    .append("invocations", String.valueOf(invocations))
+                    .append("timestamp", result.get("timestamp"));
 
             collection.insertOne(someIpInformation);
 

@@ -8,19 +8,24 @@ import com.eclipsesource.json.JsonObject;
 
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 public class IpInformationBuilder {
     private String ip;
     private IpInformation ipInformation;
     private Properties propiedades = new Properties();
     private JsonObject defaultInformation;
+    private static final String NODATA = "No Data";
+
     private static final  JsonObject DEFAULT_INFORMATION = new JsonObject()
-            .add("country_name","No disponible")
-            .add("alpha3Code","No disponible");
+            .add("countryName",NODATA)
+            .add("countryIsoCode",NODATA)
+            .add("currency",NODATA)
+            .add("timezone",NODATA)
+            .add("longitude",0.00)
+            .add("latitude",0.00)
+            .add("languages", NODATA)
+            .add("quoteAgainstDollar", 0.00);
     private String countryName;
     private String countryIsoCode;
     private String currency;
@@ -37,6 +42,7 @@ public class IpInformationBuilder {
     private Map<String, IpInformationFromIpapi>  ipsForIpapi = new HashMap<>();
     private Map<String, IpInformationFromApilayer> ipsForApilayer = new HashMap<>();
 
+
     public static IpInformationBuilder basedOnConfiguration(String configurationFileName){
 
         return basedOnConfigurationOrByDefault(configurationFileName, DEFAULT_INFORMATION);
@@ -47,10 +53,11 @@ public class IpInformationBuilder {
         return new IpInformationBuilder(configurationFileName, defaultJson);
     }
     private IpInformationBuilder(String configurationFileName, JsonObject defaultJson) {
+        defaultInformation = defaultJson;
+
         try{
             propiedades.load(new FileReader(configurationFileName));
         }catch(IOException error){
-            defaultInformation = defaultJson;
         }
     }
 
@@ -58,15 +65,17 @@ public class IpInformationBuilder {
         this.countryName = getProviderFor("NAME_PROVIDER").retrieveCountryName();
     }
 
-    private IpInformationInterface getProviderFor(String aProviderName) {
+    private IpInformationInterface getProviderFor(String providerNameField) {
 
-        if(IpInformationFromAbstractApi.handle((String) propiedades.getOrDefault(aProviderName, "")))
+        String providerName = (String) propiedades.getOrDefault(providerNameField, "");
+        
+        if(IpInformationFromAbstractApi.handle(providerName))
             return getipinformationfromAbstractapi();
         else
-            if(IpInformationFromIpapi.handle((String) propiedades.getOrDefault(aProviderName, "")))
+            if(IpInformationFromIpapi.handle(providerName))
                 return getIpInformationFromIpapi();
             else
-                if(IpInformationFromApilayer.handle((String) propiedades.getOrDefault(aProviderName, "")))
+                if(IpInformationFromApilayer.handle(providerName))
                     return getIpInformationFromApilayer();
                 else
                     return getInformationProviderNotDefined();
@@ -102,7 +111,7 @@ public class IpInformationBuilder {
             ipsForIpapi.put(this.ip, ipInformationFromIpapi);
         }
         return ipInformationFromIpapi;
-        
+
     }
 
     private IpInformationFromAbstractApi getipinformationfromAbstractapi() {
@@ -135,29 +144,46 @@ public class IpInformationBuilder {
 
     public void setCountryIsoCode() {
 
-        this.countryIsoCode = getProviderFor("ISO_CODE_PROVIDER").retrieveCountryIsoCode();
-
-        //USAR ABSTRACTAPI PARA NOMBRE Y CODIGO ISO
-        //ADEMAS EN EL BUILDER VAN A HABER DATOS QUE SI O SI LOS TIENE QUE TENER DESDE ANTES, COMO POR EJEMPLO LA MONEDA
-            //PARA ESOS CASOS CREO QUE DEBERIA TIRAR UNA EXCEPCION SI NO LO TIENE, PARA QUE SE SEPA EN QUE ORDEN EJECUTARLO
+        try {
+            this.countryIsoCode = getProviderFor("ISO_CODE_PROVIDER").retrieveCountryIsoCode();
+        } catch (NullPointerException e) {
+            this.countryIsoCode = defaultInformation.getString("countryIsoCode", NODATA);
+        }
     }
      public void setCountryCurrency() {
 
-        this.currency = getProviderFor("CURRENCY_PROVIDER").retrieveCountryCurrency();
-
+         try{
+             this.currency = getProviderFor("CURRENCY_PROVIDER").retrieveCountryCurrency();
+         }catch (NullPointerException e){
+             this.currency = defaultInformation.getString("currency", NODATA);
+         }
     }
 
     public void setDistanceToBuenosAires() {
-        this.latitude = getProviderFor("LATITUDE_AND_LONGITUDE_PROVIDER").retrieveCountryLatitude();
-        this.longitude = getProviderFor("LATITUDE_AND_LONGITUDE_PROVIDER").retrieveCountryLongitude();
+        try{
+            this.latitude = getProviderFor("LATITUDE_AND_LONGITUDE_PROVIDER").retrieveCountryLatitude();
+        }catch (NullPointerException e){
+            this.latitude = defaultInformation.getDouble("latitude", 0.00);
+        }
+
+        try{
+            this.longitude = getProviderFor("LATITUDE_AND_LONGITUDE_PROVIDER").retrieveCountryLongitude();
+        }catch (NullPointerException e){
+            this.longitude = defaultInformation.getDouble("longitude", 0.00);
+        }
+
+    }
+
+    public void setQuoteAgainstDollar() {
+        try{
+            this.quoteAgainstDollar = getProviderFor("QUOTE_PROVIDER").retrieveQuoteAgainstDollar();
+        }catch (NullPointerException e){
+            this.quoteAgainstDollar = defaultInformation.getDouble("quoteAgainstDollar", 0.00);
+        }
     }
 
     public void setLanguages() {
         this.languages = getProviderFor("LANGUAGES_PROVIDER").retrieveCountryLanguages();
-    }
-
-    public void setQuoteAgainstDollar() {
-        this.quoteAgainstDollar = getProviderFor("QUOTE_PROVIDER").retrieveQuoteAgainstDollar();
     }
 
     public void setIp(String ip) {

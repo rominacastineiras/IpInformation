@@ -36,11 +36,6 @@ public class IpInformationFromJson implements IpInformationInterface {
     }
 
     @Override
-    public String retrieveCountryDistanceToBuenosAires() {
-        return null;
-    }
-
-    @Override
     public double retrieveQuoteAgainstDollar() {
         return 0.00;
     }

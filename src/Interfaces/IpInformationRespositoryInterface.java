@@ -14,4 +14,6 @@ public interface IpInformationRespositoryInterface {
     Map<String, String> getLeastFarCountry();
 
     Map<String, String> getAverageDistance();
+
+    String lastPersistedIpTimestamp();
 }

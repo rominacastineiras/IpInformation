@@ -44,4 +44,10 @@ public class IpInformationInMemory implements IpInformationRespositoryInterface 
     public Map<String, String> getAverageDistance() {
         return null;
     }
+
+    @Override
+    public String lastPersistedIpTimestamp() {
+
+        return null;
+    }
 }

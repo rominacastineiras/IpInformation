@@ -7,11 +7,13 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class IpInformation{
+    private final LocalDateTime timestamp;
     String ip;
     IpInformationBuilder informationBuilder;
     private final String countryName;
@@ -30,6 +32,7 @@ public class IpInformation{
         this.longitude = longitude;
         this.languages = languages;
         this.quoteAgainstDollar = quoteAgainstDollar;
+        this.timestamp = LocalDateTime.now();
     }
 
     public void retrieveInformation(){
@@ -122,6 +125,8 @@ public class IpInformation{
         result.put("languages", languages.toString());
         result.put("quoteAgainstDollar", String.valueOf(quoteAgainstDollar));
         result.put("countryName", countryName);
+        result.put("timestamp", timestamp.toString());
+
 
         return result;
 
