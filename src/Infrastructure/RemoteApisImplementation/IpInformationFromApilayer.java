@@ -22,7 +22,6 @@ public class IpInformationFromApilayer implements IpInformationInterface {
     private static final String NODATA = "No Data";
 
 
-
     public static boolean handle(String url) {
         return url.contains("api.apilayer.com");
     }
@@ -61,11 +60,11 @@ public class IpInformationFromApilayer implements IpInformationInterface {
         return data;
 
     }
-
+    @Override
     public String retrieveCountryName() {
         return NODATA;
     }
-
+    @Override
     public String retrieveCountryIsoCode() {
         return NODATA;
     }
@@ -88,10 +87,11 @@ public class IpInformationFromApilayer implements IpInformationInterface {
     public double retrieveQuoteAgainstDollar() {
         return getData().get("rates").asObject().getDouble("USD", 0.00);
     }
-
+    @Override
     public double retrieveCountryLatitude(){
         return getData().getDouble("latitude", 0.00);
     }
+    @Override
     public double retrieveCountryLongitude(){
         return getData().getDouble("longitude", 0.00);
     }

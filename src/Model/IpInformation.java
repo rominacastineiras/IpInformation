@@ -141,7 +141,6 @@ public class IpInformation{
                 .add("languages", languages.toString())
                 .add("quoteAgainstDollar", quoteAgainstDollar);
 
-
         return  json.asObject();
     }
 }

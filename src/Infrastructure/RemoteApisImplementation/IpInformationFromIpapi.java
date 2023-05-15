@@ -38,7 +38,6 @@ public class IpInformationFromIpapi implements IpInformationInterface {
                     .uri(URI.create("http://api.ipapi.com/api/" + ip + "?access_key=" + accessKey ))
                     .method("GET", HttpRequest.BodyPublishers.noBody())
                     .build();
-
             try {
                 HttpResponse response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
                 data = Json.parse((String) response.body()).asObject();
@@ -61,11 +60,11 @@ public class IpInformationFromIpapi implements IpInformationInterface {
     }
 
     public String retrieveCountryName() {
-        return getData().getString("country_name","").toString();
+        return getData().getString("country_name",NODATA).toString();
     }
 
     public String retrieveCountryIsoCode() {
-        return getData().getString("country_code","").toString();
+        return getData().getString("country_code",NODATA).toString();
     }
 
     @Override
@@ -76,7 +75,7 @@ public class IpInformationFromIpapi implements IpInformationInterface {
         ArrayList<String> languages = new ArrayList<>();
 
         for (int i = 0; i <= languagesCollection.size() - 1; i++) {
-            languages.add(languagesCollection.get(i).asObject().getString("name", ""));
+            languages.add(languagesCollection.get(i).asObject().getString("name", NODATA));
         }
 
         return languages;
@@ -96,10 +95,11 @@ public class IpInformationFromIpapi implements IpInformationInterface {
     public double retrieveQuoteAgainstDollar() {
         return 0.00;
     }
-
+    @Override
     public double retrieveCountryLatitude(){
         return getData().getDouble("latitude", 0.00);
     }
+    @Override
     public double retrieveCountryLongitude(){
         return getData().getDouble("longitude", 0.00);
     }

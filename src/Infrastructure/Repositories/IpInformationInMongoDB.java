@@ -37,26 +37,30 @@ public class IpInformationInMongoDB  implements IpInformationRespositoryInterfac
         String userName = (String) propiedades.getOrDefault("DB_USERNAME", "");
         String password = (String) propiedades.getOrDefault("DB_PASSWORD", "");
 
-        mongoClient = MongoClients.create("mongodb+srv://" + userName + ":" + password + "@cluster0.xok7qpl.mongodb.net/cafeDB");
-        database = mongoClient.getDatabase("cafeDB"); //TODO: cambiar nombre
-        collection = database.getCollection("IpInformation");
+      //TODO: ErrorJAR  mongoClient = MongoClients.create("mongodb+srv://" + userName + ":" + password + "@cluster0.xok7qpl.mongodb.net/cafeDB");
+        mongoClient = MongoClients.create("mongodb+srv://{USER}:{PASS}@cluster0.xok7qpl.mongodb.net/cafeDB");
+        database = mongoClient.getDatabase("IpInformation");
+        collection = database.getCollection("estimations");
+    }
+
+    private static void createEstimationRelations(Document result, Map<String, String> map) {
+        if(result != null) {
+            map.put("country_name", (String) result.get("country_name"));
+            map.put("country_code", (String) result.get("country_code"));
+            map.put("distance", (String) result.get("distance"));
+            map.put("invocations", (String) result.get("invocations"));
+        }else{
+            map.put("Info", "Todavía no hay estadísticas, consulte más tarde");
+        }
     }
 
     @Override
     public Map<String, String> getMostFarCountry() {
-       Document result = collection.find().sort(descending("distance")).first();
-       Map<String, String> map = new HashMap<>();
+        Document result = collection.find().sort(descending("distance")).first();
+        Map<String, String> map = new HashMap<>();
 
-       if(result != null) {
-           map.put("country_name", (String) result.get("country_name"));
-           map.put("country_code", (String) result.get("country_code"));
-           map.put("distance", (String) result.get("distance"));
-           map.put("invocations", (String) result.get("invocations"));
-       }else{
-           map.put("Info", "Todavía no hay estadísticas, consulte más tarde");
-       }
-
-       return map;
+        createEstimationRelations(result, map);
+        return map;
     }
 
     @Override
@@ -64,15 +68,18 @@ public class IpInformationInMongoDB  implements IpInformationRespositoryInterfac
         Document result = collection.find().sort(ascending("distance")).first();
         Map<String, String> map = new HashMap<>();
 
-        if(result != null) {
-           map.put("country_name", (String) result.get("country_name"));
-            map.put("country_code", (String) result.get("country_code"));
-            map.put("distance", (String) result.get("distance"));
-            map.put("invocations", (String) result.get("invocations"));
-        }else{
-            map.put("Info", "Todavía no hay estadísticas, consulte más tarde");
-        }
+        createEstimationRelations(result, map);
         return map;    }
+
+    private static void calculateAverage(MongoCursor<Document> cursor, double operando, int divisor, Map<String, String> map) {
+        while (cursor.hasNext()) {
+            Document elementOnStudy = cursor.next();
+            operando = operando + parseDouble((String) elementOnStudy.get("distance")) *  parseInt((String) elementOnStudy.get("invocations"));
+            divisor = divisor + parseInt((String) elementOnStudy.get("invocations"));
+        }
+
+        map.put("averageDistance",String.valueOf(operando / divisor));
+    }
 
     @Override
     public Map<String, String> getAverageDistance() {
@@ -80,16 +87,9 @@ public class IpInformationInMongoDB  implements IpInformationRespositoryInterfac
         MongoCursor<Document> cursor = results.iterator();
         double operando = 0.00;
         int divisor = 0;
-
-        while (cursor.hasNext()) {
-            Document elementOnStudy = cursor.next();
-            operando = operando + parseDouble((String) elementOnStudy.get("distance")) *  parseInt((String) elementOnStudy.get("invocations"));
-            divisor = divisor + parseInt((String) elementOnStudy.get("invocations"));
-        }
         Map<String, String> map = new HashMap<>();
 
-        map.put("averageDistance",String.valueOf(operando / divisor));
-
+        calculateAverage(cursor, operando, divisor, map);
         return map;
     }
 
@@ -120,26 +120,31 @@ public class IpInformationInMongoDB  implements IpInformationRespositoryInterfac
         int invocations = 1;
 
         if(ipInformationFound != null){
-            invocations = parseInt((String) ipInformationFound.get("invocations"));
-            invocations++;
-            Document someIpInformation = new Document("_id", new ObjectId());
-            someIpInformation.append("invocations", String.valueOf(invocations));
-            Bson filter = eq("country_code", result.get("countryIsoCode"));
-            Bson updateOperation = set("invocations", String.valueOf(invocations));
-            collection.updateOne(filter, updateOperation);
-
+            updateEstimation(result, ipInformationFound);
         }else{
-            Document someIpInformation = new Document("_id", new ObjectId());
-            someIpInformation.append("country_name", result.get("countryName"))
-                    .append("country_code", result.get("countryIsoCode"))
-                    .append("distance", result.get("distanceToBuenosAires"))
-                    .append("invocations", String.valueOf(invocations))
-                    .append("timestamp", result.get("timestamp"));
-
-            collection.insertOne(someIpInformation);
-
+            insertEstimation(result, invocations);
         }
+    }
 
+    private void insertEstimation(Map<String, String> result, int invocations) {
+        Document someIpInformation = new Document("_id", new ObjectId());
+        someIpInformation.append("country_name", result.get("countryName"))
+                .append("country_code", result.get("countryIsoCode"))
+                .append("distance", result.get("distanceToBuenosAires"))
+                .append("invocations", String.valueOf(invocations))
+                .append("timestamp", result.get("timestamp"));
 
+        collection.insertOne(someIpInformation);
+    }
+
+    private void updateEstimation(Map<String, String> result, Document ipInformationFound) {
+        int invocations;
+        invocations = parseInt((String) ipInformationFound.get("invocations"));
+        invocations++;
+        Document someIpInformation = new Document("_id", new ObjectId());
+        someIpInformation.append("invocations", String.valueOf(invocations));
+        Bson filter = eq("country_code", result.get("countryIsoCode"));
+        Bson updateOperation = set("invocations", String.valueOf(invocations));
+        collection.updateOne(filter, updateOperation);
     }
 }

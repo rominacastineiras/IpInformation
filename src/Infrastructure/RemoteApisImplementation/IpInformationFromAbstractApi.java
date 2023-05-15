@@ -61,11 +61,11 @@ public class IpInformationFromAbstractApi implements IpInformationInterface {
     }
 
     public String retrieveCountryName() {
-        return getData().getString("country","").toString();
+        return getData().getString("country",NODATA).toString();
     }
 
     public String retrieveCountryIsoCode() {
-        return getData().getString("country_code","").toString();
+        return getData().getString("country_code",NODATA).toString();
     }
 
     @Override
@@ -74,23 +74,24 @@ public class IpInformationFromAbstractApi implements IpInformationInterface {
     }
 
     public String retrieveCountryCurrency() {
-        return getData().get("currency").asObject().getString("currency_code", "");
-
+        return getData().get("currency").asObject().getString("currency_code", NODATA);
     }
 
     @Override
     public String retrieveCountryTimeZone() {
-        return getData().get("timezone").asObject().getString("current_time", "");
+        return getData().get("timezone").asObject().getString("current_time", NODATA);
     }
 
     @Override
     public double retrieveQuoteAgainstDollar() {
         return 0.00;
     }
+    @Override
 
     public double retrieveCountryLatitude(){
         return getData().getDouble("latitude", 0.00);
     }
+    @Override
     public double retrieveCountryLongitude(){
         return getData().getDouble("longitude", 0.00);
     }

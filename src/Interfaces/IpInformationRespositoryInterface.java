@@ -8,15 +8,15 @@ import java.util.Map;
 public interface IpInformationRespositoryInterface {
     void connectIfNecessary();
 
-    Map<String, String> getMostFarCountry();
-
     void save(IpInformation ipInformation);
+
+    void saveFromJson(JsonObject object);
+
+    Map<String, String> getMostFarCountry();
 
     Map<String, String> getLeastFarCountry();
 
     Map<String, String> getAverageDistance();
 
     String lastPersistedIpTimestamp();
-
-    void saveFromJson(JsonObject object);
 }

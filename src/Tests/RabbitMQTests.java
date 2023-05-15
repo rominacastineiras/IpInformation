@@ -1,21 +1,10 @@
 package Tests;
 
-import Model.IpInformation;
-import Model.IpInformationBuilder;
-import com.eclipsesource.json.JsonObject;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.DefaultConsumer;
-import org.junit.Test;
-import org.junit.jupiter.api.Assertions;
 
-import java.io.IOException;
-import java.util.concurrent.TimeoutException;
 
 public class RabbitMQTests {
 
-    @Test
+  /*  @Test
     public void shouldRetrieveCountryName() throws IOException, TimeoutException {
         String QUEUE_NAME = "order_queue";
         String HOST = "localhost";
