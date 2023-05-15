@@ -3,26 +3,25 @@ package Model;
 import Infrastructure.RemoteApisImplementation.IpInformationFromAbstractApi;
 import Infrastructure.RemoteApisImplementation.IpInformationFromApilayer;
 import Infrastructure.RemoteApisImplementation.IpInformationFromIpapi;
-import Interfaces.IpInformationInterface;
 import com.eclipsesource.json.JsonObject;
 
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 public class ApiIntanceProvider {
     private InformationProviderNotDefined informationProviderNotDefined;
-    private IpInformationFromIpapi ipInformationFromIpapi;
-    private IpInformationFromAbstractApi ipInformationFromAbstractApi;
-    private Map<String, IpInformationFromAbstractApi> ipsForAbstractApi = new HashMap<>();
-    private IpInformationFromApilayer ipInformationFromApilayer;
-    private Map<String, IpInformationFromIpapi>  ipsForIpapi = new HashMap<>();
-    private Map<String, IpInformationFromApilayer> ipsForApilayer = new HashMap<>();
+    private final Map<String, IpInformationFromAbstractApi> ipsForAbstractApi = new HashMap<>();
+    private final Map<String, IpInformationFromIpapi>  ipsForIpapi = new HashMap<>();
+    private final Map<String, IpInformationFromApilayer> ipsForApilayer = new HashMap<>();
+
+    private final Properties propiedades;
 
     private static final String NODATA = "No Data";
+
+    public ApiIntanceProvider(Properties propiedades) {
+        this.propiedades = propiedades;
+    }
 
     private static final  JsonObject DEFAULT_INFORMATION = new JsonObject()
             .add("countryName",NODATA)
@@ -32,25 +31,26 @@ public class ApiIntanceProvider {
             .add("longitude",0.00)
             .add("latitude",0.00)
             .add("languages", NODATA)
+            .add("timezone", NODATA)
             .add("quoteAgainstDollar", 0.00);
 
     IpInformationFromApilayer getIpInformationFromApilayer(String currency) {
+        IpInformationFromApilayer ipInformationFromApilayer;
         if(ipsForApilayer.get(currency) != null)
             ipInformationFromApilayer = ipsForApilayer.get(currency);
         else {
-            //TODO: ErrorJAR  ipInformationFromApilayer = new IpInformationFromApilayer(this.currency, propiedades.getProperty("APILAYER_KEY"));
-            ipInformationFromApilayer = new IpInformationFromApilayer(currency, "BiQ1BDEeQiyWPzYIsJKpFCnGg84HVcuf");
+            ipInformationFromApilayer = new IpInformationFromApilayer(currency, propiedades.getProperty("APILAYER_KEY"));
             ipsForApilayer.put(currency, ipInformationFromApilayer);
         }
         return ipInformationFromApilayer;
         
     }
     IpInformationFromIpapi getIpInformationFromIpapi(String ip) {
+        IpInformationFromIpapi ipInformationFromIpapi;
         if(ipsForIpapi.get(ip) != null)
             ipInformationFromIpapi = ipsForIpapi.get(ip);
         else {
-            //TODO: ErrorJAR   ipInformationFromIpapi = new IpInformationFromIpapi(ip, propiedades.getProperty("IPAPI_ACCESS_KEY"));
-            ipInformationFromIpapi = new IpInformationFromIpapi(ip,"21d86faa5a30addd1f92a5447e46110c");
+            ipInformationFromIpapi = new IpInformationFromIpapi(ip, propiedades.getProperty("IPAPI_ACCESS_KEY"));
             ipsForIpapi.put(ip, ipInformationFromIpapi);
         }
         return ipInformationFromIpapi;
@@ -58,11 +58,11 @@ public class ApiIntanceProvider {
 
 
     IpInformationFromAbstractApi getipinformationfromAbstractapi(String ip) {
+        IpInformationFromAbstractApi ipInformationFromAbstractApi;
         if(ipsForAbstractApi.get(ip) != null)
             ipInformationFromAbstractApi = ipsForAbstractApi.get(ip);
         else {
-            //TODO: ErrorJAR  ipInformationFromAbstractApi = new IpInformationFromAbstractApi(ip, propiedades.getProperty("ABSTRACTAPI_ACCESS_KEY"));
-            ipInformationFromAbstractApi = new IpInformationFromAbstractApi(ip, "0fad83f2089d4548a8603b56947456d1");
+            ipInformationFromAbstractApi = new IpInformationFromAbstractApi(ip, propiedades.getProperty("ABSTRACTAPI_ACCESS_KEY"));
             ipsForAbstractApi.put(ip, ipInformationFromAbstractApi);
         }
         return ipInformationFromAbstractApi;

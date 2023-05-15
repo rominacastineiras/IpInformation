@@ -2,15 +2,9 @@ import Infrastructure.Repositories.IpInformationInMongoDB;
 import Model.IpInformationBuilder;
 import Model.IpInformationSystem;
 import Model.PeriodicalRespositoryProcess;
-import com.eclipsesource.json.Json;
-import com.rabbitmq.client.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.util.Scanner;
 import java.util.concurrent.TimeoutException;
 
@@ -20,7 +14,7 @@ public class Main {
         IpInformationBuilder informationBuilder = IpInformationBuilder.basedOnConfiguration((new File("config.properties").getAbsolutePath()));
         IpInformationSystem system = new IpInformationSystem(new IpInformationInMongoDB(), informationBuilder);
 
-        String ip = "";
+        String ip;
 
         if(args.length != 0) {
             system.newQueryFor(args[0]);
@@ -39,11 +33,13 @@ public class Main {
         try{
             Thread.sleep(4000);
         } catch (InterruptedException e) {
+            //Do nothing
         }
 
         try{
             Thread.sleep(2000);
         } catch (InterruptedException e) {
+            //Do nothing
         }
 
         showResultsAndAskToContinue(system);
@@ -52,20 +48,24 @@ public class Main {
 
     private static void showResultsAndAskToContinue(IpInformationSystem system) throws IOException, TimeoutException {
         String ip;
-        System.out.println("Resultado de consulta: " + system.showResult());
+        System.out.println("Resultado de consulta: " + "\n" + system.showResult());
 
-        System.out.println("Distancia más lejana: " + system.getMostFarCountry());
+        System.out.println("------------------------------------------------------------------------------" );
+        System.out.println("Distancia más lejana: " + "\n" + system.showMostFarCountry());
 
-        System.out.println("Distancia más cercana: " + system.getLeastFarCountry());
+        System.out.println("------------------------------------------------------------------------------" );
+        System.out.println("Distancia más cercana: " + "\n" + system.showLeastFarCountry());
 
-        System.out.println("Distancia promedio: " + system.getAverageDistance());
+        System.out.println("------------------------------------------------------------------------------" );
+        System.out.println("Distancia promedio: " + "\n" + system.showAverageDistance());
 
-        System.out.println("Última actualización de estadísticas: " + system.lastPersistedIpTimestamp());
+        System.out.println("------------------------------------------------------------------------------" );
+        System.out.println("Última actualización de estadísticas: "  + "\n" + system.lastPersistedIpTimestamp());
 
 
         System.out.println("¿Desea realizar otra consulta? S/N");
 
-        String consultaParaSeguir = "";
+        String consultaParaSeguir;
 
         Scanner entradaEscaner = new Scanner(System.in);
 

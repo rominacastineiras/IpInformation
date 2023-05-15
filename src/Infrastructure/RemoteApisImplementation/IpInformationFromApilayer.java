@@ -3,6 +3,7 @@ package Infrastructure.RemoteApisImplementation;
 import Interfaces.IpInformationInterface;
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.ParseException;
 
 import java.io.IOException;
 import java.net.URI;
@@ -12,6 +13,7 @@ import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class IpInformationFromApilayer implements IpInformationInterface {
 
@@ -33,7 +35,7 @@ public class IpInformationFromApilayer implements IpInformationInterface {
 
     private JsonObject getData() {
 
-        if(data.isEmpty() && currencyCode != NODATA){
+        if(data.isEmpty() && !Objects.equals(currencyCode, NODATA)){
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create("https://api.apilayer.com/fixer/latest?base="+ currencyCode ))
                     .headers("apikey", accessKey)
@@ -41,20 +43,21 @@ public class IpInformationFromApilayer implements IpInformationInterface {
                     .build();
 
             try {
-                HttpResponse response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-                data = Json.parse((String) response.body()).asObject();
+                HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+                data = Json.parse(response.body()).asObject();
             } catch (IOException e) {
                 e.printStackTrace();
-            } catch (InterruptedException e) {
+            } catch (InterruptedException  | ParseException e) {
                 //Se reintenta porque la Api al ser gratis tiene límite de consultas por segundo
                 retries++;
                 try{
-                    Thread.sleep(5000);
+                    Thread.sleep(3000);
                 }catch (InterruptedException ex){
-
+                    //Do nothing
                 }
-                if(retries < 5)
+                if(retries < 3)
                     this.getData();
+
             }
         }
         return data;

@@ -1,30 +1,22 @@
 package Model;
 
-import com.eclipsesource.json.Json;
-import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
 import java.util.*;
 
 public class IpInformation{
-    private LocalDateTime timestamp = LocalDateTime.now();
-    String ip;
-    IpInformationBuilder informationBuilder;
-    private String countryName = "";
-    private String countryIsoCode;
-    private String currency;
-    private double longitude;
-    private double latitude;
-    private List<String> languages;
-    private double quoteAgainstDollar;
+    private final LocalDateTime timestamp;
+    private final String countryName;
+    private final String countryIsoCode;
+    private final String currency;
+    private final double longitude;
+    private final double latitude;
+    private final List<String> languages;
+    private final String timezone;
+    private final double quoteAgainstDollar;
 
-    public IpInformation(String countryName, String countryIsoCode, String currency, double longitude, double latitude, List<String> languages, double quoteAgainstDollar) {
+    public IpInformation(String countryName, String countryIsoCode, String currency, double longitude, double latitude, List<String> languages, double quoteAgainstDollar, String timezone) {
         this.countryName = countryName;
         this.countryIsoCode = countryIsoCode;
         this.currency = currency;
@@ -33,40 +25,7 @@ public class IpInformation{
         this.languages = languages;
         this.quoteAgainstDollar = quoteAgainstDollar;
         this.timestamp = LocalDateTime.now();
-    }
-
-    public void retrieveInformation(){
-        //            country layer
-        informationBuilder.setCountryName();
- /*       informationBuilder.setCountryIsoCOode();
-//                ipapi
-        informationBuilder.setCountryLanguages();
-//                abstractapi
-        informationBuilder.setCountryCurrency();
-        informationBuilder.setCountryTimeZone();
-        informationBuilder.setCountryDistanceToBuenosAires();
-//                apilayer
-        informationBuilder.setCountryQuoteAgainstDollar();
-*/
-    }
-
-    public String retrieveAlphaCode() {
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://api.ipapi.com/api/161.185.160.93?access_key=21d86faa5a30addd1f92a5447e46110c"))
-                .method("GET", HttpRequest.BodyPublishers.noBody())
-                .build();
-
-        String alphaCode = "";
-
-        try {
-            HttpResponse response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-             alphaCode = Json.parse((String) response.body()).asObject().get("data").asObject().getString("country_code", "");
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            alphaCode = "No info";
-        }
-        return alphaCode;
+        this.timezone = timezone;
     }
 
     public double distanceInKm(double lat1, double lon1, double lat2, double lon2) {
@@ -117,14 +76,15 @@ public class IpInformation{
     public Map<String, String> result() {
         Map<String, String> result = new HashMap<>();
 
+        String languagesCollection = languages.toString();
+
         result.put("countryName", countryName);
         result.put("countryIsoCode", countryIsoCode);
         result.put("currency", currency);
         result.put("distanceToBuenosAires", String.valueOf(distanceToBuenosAires()));
-        result.put("timestamp", "timestamp"); //TODO: Completar
-        result.put("languages", languages.toString());
+        result.put("timezone", timezone);
+        result.put("languages", languagesCollection.substring(1, languagesCollection.length() - 1));
         result.put("quoteAgainstDollar", String.valueOf(quoteAgainstDollar));
-        result.put("countryName", countryName);
         result.put("timestamp", timestamp.toString());
 
 
@@ -139,7 +99,8 @@ public class IpInformation{
                 .add("latitude", latitude)
                 .add("longitude", longitude)
                 .add("languages", languages.toString())
-                .add("quoteAgainstDollar", quoteAgainstDollar);
+                .add("quoteAgainstDollar", quoteAgainstDollar)
+                .add("timezone", timezone);
 
         return  json.asObject();
     }

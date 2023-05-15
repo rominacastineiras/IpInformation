@@ -2,7 +2,6 @@ package Tests;
 
 import Infrastructure.Repositories.IpInformationInMemory;
 import Infrastructure.Repositories.IpInformationInMongoDB;
-import Model.IpInformation;
 import Model.IpInformationBuilder;
 import Model.IpInformationSystem;
 import Model.PeriodicalRespositoryProcess;
@@ -14,13 +13,9 @@ import org.junit.jupiter.api.Assertions;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeoutException;
-
-import static java.lang.Double.parseDouble;
-import static java.lang.Integer.parseInt;
 
 public class IpInformationSystemTests {
     @Test
@@ -31,15 +26,15 @@ public class IpInformationSystemTests {
 
         system.newQueryFor("166.171.248.255");
 
-        Map<String, String> result = system.showResult();
+        Map<String, String> result = system.getResult();
 
-        Assertions.assertTrue(result.get("countryName").equals("United States"));
-        Assertions.assertTrue(result.get("countryIsoCode").equals("US"));
-        Assertions.assertTrue(result.get("currency").equals("USD"));
-        Assertions.assertTrue(result.get("distanceToBuenosAires").equals("9017"));
+        Assertions.assertEquals("United States", result.get("countryName"));
+        Assertions.assertEquals("US", result.get("countryIsoCode"));
+        Assertions.assertEquals("USD", result.get("currency"));
+        Assertions.assertEquals("9017", result.get("distanceToBuenosAires"));
        // Assertions.assertTrue(result.get("timestamp").equals("Argentina"));
-        Assertions.assertTrue(result.get("languages").equals("[English]"));
-        Assertions.assertTrue(result.get("quoteAgainstDollar").equals("1.0"));
+        Assertions.assertEquals("[English]", result.get("languages"));
+        Assertions.assertEquals("1.0", result.get("quoteAgainstDollar"));
         cleanDataBase();
 
 
@@ -57,22 +52,23 @@ public class IpInformationSystemTests {
         try{
             Thread.sleep(4000);
         } catch (InterruptedException e) {
+            //Do nothing
         }
         Map<String, String> statistics = system.getMostFarCountry();
 
-        Assertions.assertTrue(statistics.get("country_name").equals("Argentina"));
-        Assertions.assertTrue(statistics.get("country_code").equals("AR"));
-        Assertions.assertTrue(statistics.get("distance").equals("0"));
-        Assertions.assertTrue(statistics.get("invocations").equals("1"));
+        Assertions.assertEquals("Argentina", statistics.get("country_name"));
+        Assertions.assertEquals("AR", statistics.get("country_code"));
+        Assertions.assertEquals("0", statistics.get("distance"));
+        Assertions.assertEquals("1", statistics.get("invocations"));
 
         statistics = system.getLeastFarCountry();
-        Assertions.assertTrue(statistics.get("country_name").equals("Argentina"));
-        Assertions.assertTrue(statistics.get("country_code").equals("AR"));
-        Assertions.assertTrue(statistics.get("distance").equals("0"));
-        Assertions.assertTrue(statistics.get("invocations").equals("1"));
+        Assertions.assertEquals("Argentina", statistics.get("country_name"));
+        Assertions.assertEquals("AR", statistics.get("country_code"));
+        Assertions.assertEquals("0", statistics.get("distance"));
+        Assertions.assertEquals("1", statistics.get("invocations"));
 
         statistics = system.getAverageDistance();
-        Assertions.assertTrue(statistics.get("averageDistance").equals("0.0"));
+        Assertions.assertEquals("0.0", statistics.get("averageDistance"));
         cleanDataBase();
 
     }
@@ -91,23 +87,24 @@ public class IpInformationSystemTests {
         try{
             Thread.sleep(4000);
         } catch (InterruptedException e) {
+            //Do nothing
         }
 
         Map<String, String> statistics = system.getMostFarCountry();
 
-        Assertions.assertTrue(statistics.get("country_name").equals("Argentina"));
-        Assertions.assertTrue(statistics.get("country_code").equals("AR"));
-        Assertions.assertTrue(statistics.get("distance").equals("0"));
-        Assertions.assertTrue(statistics.get("invocations").equals("2"));
+        Assertions.assertEquals("Argentina", statistics.get("country_name"));
+        Assertions.assertEquals("AR", statistics.get("country_code"));
+        Assertions.assertEquals("0", statistics.get("distance"));
+        Assertions.assertEquals("2", statistics.get("invocations"));
 
         statistics = system.getLeastFarCountry();
-        Assertions.assertTrue(statistics.get("country_name").equals("Argentina"));
-        Assertions.assertTrue(statistics.get("country_code").equals("AR"));
-        Assertions.assertTrue(statistics.get("distance").equals("0"));
-        Assertions.assertTrue(statistics.get("invocations").equals("2"));
+        Assertions.assertEquals("Argentina", statistics.get("country_name"));
+        Assertions.assertEquals("AR", statistics.get("country_code"));
+        Assertions.assertEquals("0", statistics.get("distance"));
+        Assertions.assertEquals("2", statistics.get("invocations"));
 
         statistics = system.getAverageDistance();
-        Assertions.assertTrue(statistics.get("averageDistance").equals("0.0"));
+        Assertions.assertEquals("0.0", statistics.get("averageDistance"));
         cleanDataBase();
 
     }
@@ -126,22 +123,23 @@ public class IpInformationSystemTests {
         try{
             Thread.sleep(4000);
         } catch (InterruptedException e) {
+            //Do nothing
         }
         Map<String, String> statistics = system.getMostFarCountry();
 
-        Assertions.assertTrue(statistics.get("country_name").equals("United States"));
-        Assertions.assertTrue(statistics.get("country_code").equals("US"));
-        Assertions.assertTrue(statistics.get("distance").equals("9555"));
-        Assertions.assertTrue(statistics.get("invocations").equals("1"));
+        Assertions.assertEquals("United States", statistics.get("country_name"));
+        Assertions.assertEquals("US", statistics.get("country_code"));
+        Assertions.assertEquals("9555", statistics.get("distance"));
+        Assertions.assertEquals("1", statistics.get("invocations"));
 
         statistics = system.getLeastFarCountry();
-        Assertions.assertTrue(statistics.get("country_name").equals("Argentina"));
-        Assertions.assertTrue(statistics.get("country_code").equals("AR"));
-        Assertions.assertTrue(statistics.get("distance").equals("0"));
-        Assertions.assertTrue(statistics.get("invocations").equals("1"));
+        Assertions.assertEquals("Argentina", statistics.get("country_name"));
+        Assertions.assertEquals("AR", statistics.get("country_code"));
+        Assertions.assertEquals("0", statistics.get("distance"));
+        Assertions.assertEquals("1", statistics.get("invocations"));
 
         statistics = system.getAverageDistance();
-        Assertions.assertTrue(statistics.get("averageDistance").equals("4777.5"));
+        Assertions.assertEquals("4777.5", statistics.get("averageDistance"));
         cleanDataBase();
 
     }
@@ -153,6 +151,7 @@ public class IpInformationSystemTests {
         try{
             propiedades.load(new FileReader(new File("config.properties").getAbsolutePath()));
         }catch(IOException error){
+            //Do nothing
         }
 
         String userName = (String) propiedades.getOrDefault("DB_USERNAME", "");
@@ -162,11 +161,10 @@ public class IpInformationSystemTests {
         MongoDatabase database = mongoClient.getDatabase("cafeDB"); //TODO: cambiar nombre
         MongoCollection<Document> collection = database.getCollection("IpInformation");
         FindIterable<Document> results = collection.find();
-        MongoCursor<Document> cursor = results.iterator();
 
 
-        while (cursor.hasNext()) {
-            collection.deleteOne(cursor.next());
+        for (Document result : results) {
+            collection.deleteOne(result);
         }
     }
 }

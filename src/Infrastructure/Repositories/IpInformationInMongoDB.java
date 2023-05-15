@@ -11,8 +11,6 @@ import org.bson.types.ObjectId;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.*;
 
 import static com.mongodb.client.model.Filters.eq;
@@ -23,8 +21,6 @@ import static java.lang.Double.parseDouble;
 import static java.lang.Integer.parseInt;
 
 public class IpInformationInMongoDB  implements IpInformationRespositoryInterface {
-    private MongoClient mongoClient;
-    private MongoDatabase database;
     private MongoCollection<Document> collection;
     @Override
     public void connectIfNecessary() {
@@ -32,14 +28,14 @@ public class IpInformationInMongoDB  implements IpInformationRespositoryInterfac
         try{
             propiedades.load(new FileReader(new File("config.properties").getAbsolutePath()));
         }catch(IOException error){
+            //Do nothing
         }
 
         String userName = (String) propiedades.getOrDefault("DB_USERNAME", "");
         String password = (String) propiedades.getOrDefault("DB_PASSWORD", "");
 
-      //TODO: ErrorJAR  mongoClient = MongoClients.create("mongodb+srv://" + userName + ":" + password + "@cluster0.xok7qpl.mongodb.net/cafeDB");
-        mongoClient = MongoClients.create("mongodb+srv://{USER}:{PASS}@cluster0.xok7qpl.mongodb.net/cafeDB");
-        database = mongoClient.getDatabase("IpInformation");
+        MongoClient mongoClient = MongoClients.create("mongodb+srv://" + userName + ":" + password + "@cluster0.xok7qpl.mongodb.net/cafeDB");
+        MongoDatabase database = mongoClient.getDatabase("IpInformation");
         collection = database.getCollection("estimations");
     }
 
@@ -104,10 +100,11 @@ public class IpInformationInMongoDB  implements IpInformationRespositoryInterfac
                 object.getString("countryName",""),
                 object.getString("countryIsoCode",""),
                 object.getString("currency",""),
-                object.getDouble("latitude",0.00),
                 object.getDouble("longitude",0.00),
+                object.getDouble("latitude",0.00),
                 new ArrayList<>(Collections.singleton(object.getString("languages", ""))),
-                object.getDouble("quoteAgainstDollar",0.00)
+                object.getDouble("quoteAgainstDollar",0.00),
+                object.getString("timezone", "")
         ));
     }
     @Override

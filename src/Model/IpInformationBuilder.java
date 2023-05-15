@@ -5,6 +5,7 @@ import Infrastructure.RemoteApisImplementation.IpInformationFromApilayer;
 import Infrastructure.RemoteApisImplementation.IpInformationFromIpapi;
 import Interfaces.IpInformationInterface;
 import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.ParseException;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -12,10 +13,10 @@ import java.util.*;
 
 public class IpInformationBuilder {
     private String ip;
-    private Properties propiedades = new Properties();
-    private JsonObject defaultInformation;
+    private final Properties propiedades = new Properties();
+    private final JsonObject defaultInformation;
 
-    private ApiIntanceProvider apiInstanceProvider;
+    private final ApiIntanceProvider apiInstanceProvider;
     private static final String NODATA = "No Data";
 
     private static final  JsonObject DEFAULT_INFORMATION = new JsonObject()
@@ -34,7 +35,7 @@ public class IpInformationBuilder {
     private double longitude;
     private List<String> languages;
     private double quoteAgainstDollar;
-    private IpInformationInterface ipInformationInterface;
+    private String timezone;
 
 
     public static IpInformationBuilder basedOnConfiguration(String configurationFileName){
@@ -48,23 +49,20 @@ public class IpInformationBuilder {
     }
     private IpInformationBuilder(String configurationFileName, JsonObject defaultJson) {
         defaultInformation = defaultJson;
-        apiInstanceProvider = new ApiIntanceProvider();
 
         try{
             propiedades.load(new FileReader(configurationFileName));
         }catch(IOException error){
+            //Do nothing
         }
-    }
 
-    public void setCountryName(){
-        //TODO: ErrorJAR    this.countryName = getProviderFor("NAME_PROVIDER").retrieveCountryName();
-        this.countryName = getProviderFor("https://ipgeolocation.abstractapi.com/v1/").retrieveCountryName();
+        apiInstanceProvider = new ApiIntanceProvider(propiedades);
+
     }
 
     private IpInformationInterface getProviderFor(String providerNameField) {
 
-        //TODO: ErrorJAR    String providerName = (String) propiedades.getOrDefault(providerNameField, "");
-        String providerName = providerNameField;
+        String providerName = (String) propiedades.getOrDefault(providerNameField, "");
         if(IpInformationFromAbstractApi.handle(providerName))
             return apiInstanceProvider.getipinformationfromAbstractapi(ip);
         else
@@ -85,39 +83,45 @@ public class IpInformationBuilder {
                 longitude,
                 latitude,
                 languages,
-                quoteAgainstDollar
+                quoteAgainstDollar,
+                timezone
         );
+    }
+
+    public void setCountryName(){
+        try {
+            this.countryName = getProviderFor("NAME_PROVIDER").retrieveCountryName();
+        } catch (NullPointerException | ParseException e ) {
+            this.countryName = defaultInformation.getString("countryName", NODATA);
+        }
+
     }
 
     public void setCountryIsoCode() {
         try {
-            //TODO: ErrorJAR       this.countryIsoCode = getProviderFor("ISO_CODE_PROVIDER").retrieveCountryIsoCode();
-            this.countryIsoCode = getProviderFor("https://ipgeolocation.abstractapi.com/v1/").retrieveCountryIsoCode();
-        } catch (NullPointerException e) {
+            this.countryIsoCode = getProviderFor("ISO_CODE_PROVIDER").retrieveCountryIsoCode();
+        } catch (NullPointerException | ParseException e ) {
             this.countryIsoCode = defaultInformation.getString("countryIsoCode", NODATA);
         }
     }
-     public void setCountryCurrency() {
+    public void setCountryCurrency() {
          try{
-             //TODO: ErrorJAR this.currency = getProviderFor("CURRENCY_PROVIDER").retrieveCountryCurrency();
-             this.currency = getProviderFor("https://ipgeolocation.abstractapi.com/v1/").retrieveCountryCurrency();
-         }catch (NullPointerException e){
+             this.currency = getProviderFor("CURRENCY_PROVIDER").retrieveCountryCurrency();
+         }catch (NullPointerException  | ParseException e){
              this.currency = defaultInformation.getString("currency", NODATA);
          }
     }
 
     public void setDistanceToBuenosAires() {
         try{
-            //TODO: ErrorJAR       this.latitude = getProviderFor("LATITUDE_AND_LONGITUDE_PROVIDER").retrieveCountryLatitude();
-            this.latitude = getProviderFor("https://ipgeolocation.abstractapi.com/v1/").retrieveCountryLatitude();
-        }catch (NullPointerException e){
+            this.latitude = getProviderFor("LATITUDE_AND_LONGITUDE_PROVIDER").retrieveCountryLatitude();
+        }catch (NullPointerException  | ParseException e){
             this.latitude = defaultInformation.getDouble("latitude", 0.00);
         }
 
         try{
-//TODO: ErrorJAR            this.longitude = getProviderFor("LATITUDE_AND_LONGITUDE_PROVIDER").retrieveCountryLongitude();
-            this.longitude = getProviderFor("https://ipgeolocation.abstractapi.com/v1/").retrieveCountryLongitude();
-        }catch (NullPointerException e){
+            this.longitude = getProviderFor("LATITUDE_AND_LONGITUDE_PROVIDER").retrieveCountryLongitude();
+        }catch (NullPointerException  | ParseException e){
             this.longitude = defaultInformation.getDouble("longitude", 0.00);
         }
 
@@ -125,20 +129,25 @@ public class IpInformationBuilder {
 
     public void setQuoteAgainstDollar() {
         try{
-            //TODO: ErrorJAR         this.quoteAgainstDollar = getProviderFor("QUOTE_PROVIDER").retrieveQuoteAgainstDollar();
-            this.quoteAgainstDollar = getProviderFor("https://api.apilayer.com/fixer/latest").retrieveQuoteAgainstDollar();
-        }catch (NullPointerException e){
+            this.quoteAgainstDollar = getProviderFor("QUOTE_PROVIDER").retrieveQuoteAgainstDollar();
+        }catch (NullPointerException  | ParseException e){
             this.quoteAgainstDollar = defaultInformation.getDouble("quoteAgainstDollar", 0.00);
         }
     }
 
+    public void setCountryTimezone() {
+        try{
+            this.timezone = getProviderFor("TIME_ZONE_PROVIDER").retrieveCountryTimeZone();
+        }catch (NullPointerException  | ParseException e){
+            this.timezone = defaultInformation.getString("timezone", NODATA);
+        }
+    }
+
     public void setLanguages() {
-   //TODO: ErrorJAR     this.languages = getProviderFor("LANGUAGES_PROVIDER").retrieveCountryLanguages();
-        this.languages = getProviderFor("http://api.ipapi.com/api").retrieveCountryLanguages();
+        this.languages = getProviderFor("LANGUAGES_PROVIDER").retrieveCountryLanguages();
     }
 
     public void setIp(String ip) {
         this.ip = ip;
     }
-
 }

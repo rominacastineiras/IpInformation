@@ -36,7 +36,7 @@ public class InformationProviderNotDefined implements IpInformationInterface {
 
     @Override
     public String retrieveCountryTimeZone() {
-        return this.defaultInformation.getString("timeZone", NOT_DEFINED);
+        return this.defaultInformation.getString("timezone", NOT_DEFINED);
     }
 
     @Override

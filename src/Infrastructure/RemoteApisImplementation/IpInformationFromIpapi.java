@@ -39,19 +39,19 @@ public class IpInformationFromIpapi implements IpInformationInterface {
                     .method("GET", HttpRequest.BodyPublishers.noBody())
                     .build();
             try {
-                HttpResponse response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-                data = Json.parse((String) response.body()).asObject();
+                HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+                data = Json.parse(response.body()).asObject();
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (InterruptedException e) {
                 //Se reintenta porque la Api al ser gratis tiene límite de consultas por segundo
                 retries++;
                 try{
-                    Thread.sleep(5000);
+                    Thread.sleep(3000);
                 }catch (InterruptedException ex){
-
+                    //Do nothing
                 }
-                if(retries < 5)
+                if(retries < 3)
                     this.getData();
             }
         }
@@ -60,11 +60,11 @@ public class IpInformationFromIpapi implements IpInformationInterface {
     }
 
     public String retrieveCountryName() {
-        return getData().getString("country_name",NODATA).toString();
+        return getData().getString("country_name",NODATA);
     }
 
     public String retrieveCountryIsoCode() {
-        return getData().getString("country_code",NODATA).toString();
+        return getData().getString("country_code",NODATA);
     }
 
     @Override
