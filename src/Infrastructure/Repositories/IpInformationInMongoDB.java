@@ -2,7 +2,10 @@ package Infrastructure.Repositories;
 
 import Interfaces.IpInformationRespositoryInterface;
 import Model.IpInformation;
+import Model.IpInformationSystem;
 import com.eclipsesource.json.JsonObject;
+import com.mongodb.MongoClientException;
+import com.mongodb.MongoSecurityException;
 import com.mongodb.client.*;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -22,21 +25,25 @@ import static java.lang.Integer.parseInt;
 
 public class IpInformationInMongoDB  implements IpInformationRespositoryInterface {
     private MongoCollection<Document> collection;
+    Properties configuration;
+
+    public IpInformationInMongoDB(Properties configuration) {
+        this.configuration = configuration;
+    }
+
+
     @Override
     public void connectIfNecessary() {
-        Properties propiedades = new Properties();
-        try{
-            propiedades.load(new FileReader(new File("config.properties").getAbsolutePath()));
-        }catch(IOException error){
-            //Do nothing
-        }
 
-        String userName = (String) propiedades.getOrDefault("DB_USERNAME", "");
-        String password = (String) propiedades.getOrDefault("DB_PASSWORD", "");
+        String userName = (String) configuration.getOrDefault("DB_USERNAME", "");
+        String password = (String) configuration.getOrDefault("DB_PASSWORD", "");
 
         MongoClient mongoClient = MongoClients.create("mongodb+srv://" + userName + ":" + password + "@cluster0.xok7qpl.mongodb.net/cafeDB");
         MongoDatabase database = mongoClient.getDatabase("IpInformation");
+
         collection = database.getCollection("estimations");
+
+
     }
 
     private static void createEstimationRelations(Document result, Map<String, String> map) {

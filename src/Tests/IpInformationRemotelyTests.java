@@ -2,17 +2,22 @@ package Tests;
 
 import Model.IpInformation;
 import Model.IpInformationBuilder;
+import Model.IpInformationSystem;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.Properties;
 
 public class IpInformationRemotelyTests {
 
    @Test
     public void shouldRetrieveCountryName(){
-       IpInformationBuilder informationBuilder = IpInformationBuilder.basedOnConfiguration((new File("config.properties").getAbsolutePath()));
+
+       IpInformationBuilder informationBuilder = IpInformationBuilder.basedOnConfiguration(this.getConfiguration());
        informationBuilder.setIp("166.171.248.255");
        informationBuilder.setCountryName();
 
@@ -21,9 +26,20 @@ public class IpInformationRemotelyTests {
         Assertions.assertTrue(ipInformation.countryNameIs("United States"));
     }
 
+    private Properties getConfiguration() {
+        Properties configuration = new Properties();
+        try{
+            configuration.load(new FileReader(new File(IpInformationSystem.getConfigurationFileName()).getAbsolutePath()));
+        }catch(IOException error){
+            configuration =  new Properties();
+        }
+
+        return configuration;
+    }
+
     @Test
     public void shouldRetrieveCountryIsoCode() {
-        IpInformationBuilder informationBuilder = IpInformationBuilder.basedOnConfiguration((new File("config.properties").getAbsolutePath()));
+        IpInformationBuilder informationBuilder = IpInformationBuilder.basedOnConfiguration(this.getConfiguration());
         informationBuilder.setIp("166.171.248.255");
         informationBuilder.setCountryName();
         informationBuilder.setCountryIsoCode();
@@ -36,7 +52,7 @@ public class IpInformationRemotelyTests {
 
     @Test
     public void shouldRetrieveCountryCurrency() {
-        IpInformationBuilder informationBuilder = IpInformationBuilder.basedOnConfiguration((new File("config.properties").getAbsolutePath()));
+        IpInformationBuilder informationBuilder = IpInformationBuilder.basedOnConfiguration(this.getConfiguration());
         informationBuilder.setIp("166.171.248.255");
         informationBuilder.setCountryName();
         informationBuilder.setCountryIsoCode();
@@ -70,7 +86,7 @@ public class IpInformationRemotelyTests {
     }*/
   @Test
   public void shouldRetrieveDistanceToBuenosAires() {
-      IpInformationBuilder informationBuilder = IpInformationBuilder.basedOnConfiguration((new File("config.properties").getAbsolutePath()));
+      IpInformationBuilder informationBuilder = IpInformationBuilder.basedOnConfiguration(this.getConfiguration());
       informationBuilder.setIp("166.171.248.255");
       informationBuilder.setCountryName();
       informationBuilder.setCountryIsoCode();
@@ -89,7 +105,7 @@ public class IpInformationRemotelyTests {
   }
   @Test
   public void shouldRetrieveLanguages() {
-      IpInformationBuilder informationBuilder = IpInformationBuilder.basedOnConfiguration((new File("config.properties").getAbsolutePath()));
+      IpInformationBuilder informationBuilder = IpInformationBuilder.basedOnConfiguration(this.getConfiguration());
       informationBuilder.setIp("130.41.97.255");
       informationBuilder.setCountryName();
       informationBuilder.setCountryIsoCode();
@@ -111,7 +127,7 @@ public class IpInformationRemotelyTests {
 
   @Test
   public void shouldRetrieveQuoteAgainstDollar() { //TODO: este valor varia con el tiempo, es un test que va a fallar
-      IpInformationBuilder informationBuilder = IpInformationBuilder.basedOnConfiguration((new File("config.properties").getAbsolutePath()));
+      IpInformationBuilder informationBuilder = IpInformationBuilder.basedOnConfiguration(this.getConfiguration());
       informationBuilder.setIp("166.171.248.255");
       informationBuilder.setCountryName();
       informationBuilder.setCountryIsoCode();

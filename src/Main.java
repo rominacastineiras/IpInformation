@@ -7,15 +7,26 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
 import java.util.concurrent.TimeoutException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Main {
 
     public static void main(String[] args) throws IOException, TimeoutException {
-        IpInformationBuilder informationBuilder = IpInformationBuilder.basedOnConfiguration((new File("config.properties").getAbsolutePath()));
-        IpInformationSystem system = new IpInformationSystem(new IpInformationInMongoDB(), informationBuilder);
+        IpInformationSystem system = new IpInformationSystem();
 
+        startQueryingAndShowMenu(args, system);
+
+        new PeriodicalRespositoryProcess(system).start();
+
+        waitSomeSeconds(2000);
+
+        showResultsAndAskToContinue(system);
+
+    }
+
+    private static void startQueryingAndShowMenu(String[] args, IpInformationSystem system) throws IOException, TimeoutException {
         String ip;
-
         if(args.length != 0) {
             system.newQueryFor(args[0]);
 
@@ -25,25 +36,39 @@ public class Main {
             Scanner entradaEscaner = new Scanner(System.in);
 
             ip = entradaEscaner.nextLine();
-            system.newQueryFor(ip);
+            if(isValidInet4Address(ip))
+                system.newQueryFor(ip);
+            else{
+                System.out.println("La ip ingresada no es una ip válida");
+                startQueryingAndShowMenu(args, system);
+            }
+        }
+    }
 
+    public static boolean isValidInet4Address(String ip)
+    {
+        String IPV4_REGEX =
+                "^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\." +
+                        "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\." +
+                        "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\." +
+                        "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$";
+
+        Pattern IPv4_PATTERN = Pattern.compile(IPV4_REGEX);
+
+        if (ip == null) {
+            return false;
         }
 
-        new PeriodicalRespositoryProcess(system).start();
+        Matcher matcher = IPv4_PATTERN.matcher(ip);
+
+        return matcher.matches();
+    }
+    public static void waitSomeSeconds(int seconds) {
         try{
-            Thread.sleep(4000);
+            Thread.sleep(seconds);
         } catch (InterruptedException e) {
             //Do nothing
         }
-
-        try{
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            //Do nothing
-        }
-
-        showResultsAndAskToContinue(system);
-
     }
 
     private static void showResultsAndAskToContinue(IpInformationSystem system) throws IOException, TimeoutException {

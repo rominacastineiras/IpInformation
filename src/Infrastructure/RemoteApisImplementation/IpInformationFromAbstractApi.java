@@ -46,6 +46,7 @@ public class IpInformationFromAbstractApi implements IpInformationInterface {
                 e.printStackTrace();
             } catch (InterruptedException e) {
                 //Se reintenta porque la Api al ser gratis tiene límite de consultas por segundo
+                System.out.println("Reintentando conexión a AbstractApi (reintento " + retries + "de " + 3 +")");
                 retries++;
                 try{
                     Thread.sleep(3000);

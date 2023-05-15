@@ -45,6 +45,7 @@ public class IpInformationFromIpapi implements IpInformationInterface {
                 e.printStackTrace();
             } catch (InterruptedException e) {
                 //Se reintenta porque la Api al ser gratis tiene límite de consultas por segundo
+                System.out.println("Reintentando conexión a Ipapi (reintento " + retries + "de " + 3 +")");
                 retries++;
                 try{
                     Thread.sleep(3000);
@@ -71,13 +72,18 @@ public class IpInformationFromIpapi implements IpInformationInterface {
     public List<String> retrieveCountryLanguages() {
         getData().get("location").asObject().get("languages");
 
+        ArrayList<String> languages = getLanguagesAsStringList();
+
+        return languages;
+    }
+
+    private ArrayList<String> getLanguagesAsStringList() {
         JsonArray languagesCollection = getData().get("location").asObject().get("languages").asArray();
         ArrayList<String> languages = new ArrayList<>();
 
         for (int i = 0; i <= languagesCollection.size() - 1; i++) {
             languages.add(languagesCollection.get(i).asObject().getString("name", NODATA));
         }
-
         return languages;
     }
 

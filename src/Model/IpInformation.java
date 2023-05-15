@@ -59,7 +59,7 @@ public class IpInformation{
         return distanceToBuenosAires() == distanceToBuenosAires;
     }
 
-    private int distanceToBuenosAires() {
+    public int distanceToBuenosAires() {
         double buenosAiresLatitude = -34.61315;
         double buenosAiresLongitude = -58.37723;
         return (int)this.distanceInKm(this.latitude, this.longitude, buenosAiresLatitude, buenosAiresLongitude);
@@ -104,4 +104,13 @@ public class IpInformation{
 
         return  json.asObject();
     }
+
+    public String getCountryName() {
+        return countryName;
+    }
+
+    public String getCountryCode() {
+        return countryIsoCode;
+    }
+
 }

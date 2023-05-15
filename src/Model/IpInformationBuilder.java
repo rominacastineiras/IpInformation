@@ -7,13 +7,11 @@ import Interfaces.IpInformationInterface;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.ParseException;
 
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.*;
 
 public class IpInformationBuilder {
     private String ip;
-    private final Properties propiedades = new Properties();
+    private Properties configuration = new Properties();
     private final JsonObject defaultInformation;
 
     private final ApiIntanceProvider apiInstanceProvider;
@@ -38,31 +36,26 @@ public class IpInformationBuilder {
     private String timezone;
 
 
-    public static IpInformationBuilder basedOnConfiguration(String configurationFileName){
+    public static IpInformationBuilder basedOnConfiguration(Properties configuration){
 
-        return basedOnConfigurationOrByDefault(configurationFileName, DEFAULT_INFORMATION);
+        return basedOnConfigurationOrByDefault(configuration, DEFAULT_INFORMATION);
     }
 
-    public static IpInformationBuilder basedOnConfigurationOrByDefault(String configurationFileName, JsonObject defaultJson){
+    public static IpInformationBuilder basedOnConfigurationOrByDefault(Properties configuration, JsonObject defaultJson){
 
-        return new IpInformationBuilder(configurationFileName, defaultJson);
+        return new IpInformationBuilder(configuration, defaultJson);
     }
-    private IpInformationBuilder(String configurationFileName, JsonObject defaultJson) {
+    private IpInformationBuilder(Properties configuration, JsonObject defaultJson) {
         defaultInformation = defaultJson;
 
-        try{
-            propiedades.load(new FileReader(configurationFileName));
-        }catch(IOException error){
-            //Do nothing
-        }
-
-        apiInstanceProvider = new ApiIntanceProvider(propiedades);
+        apiInstanceProvider = new ApiIntanceProvider(configuration);
+        this.configuration = configuration;
 
     }
 
     private IpInformationInterface getProviderFor(String providerNameField) {
 
-        String providerName = (String) propiedades.getOrDefault(providerNameField, "");
+        String providerName = (String) configuration.getOrDefault(providerNameField, "");
         if(IpInformationFromAbstractApi.handle(providerName))
             return apiInstanceProvider.getipinformationfromAbstractapi(ip);
         else
