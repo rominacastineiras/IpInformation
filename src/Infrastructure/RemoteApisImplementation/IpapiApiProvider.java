@@ -13,7 +13,7 @@ import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
 
-public class IpInformationFromIpapi implements IpInformationInterface {
+public class IpapiApiProvider implements IpInformationInterface {
 
     private final String ip;
     private final String accessKey;
@@ -26,7 +26,7 @@ public class IpInformationFromIpapi implements IpInformationInterface {
         return url.contains("api.ipapi.com");
     }
 
-    public IpInformationFromIpapi(String ip, String accessKey) {
+    public IpapiApiProvider(String ip, String accessKey) {
         this.ip = ip;
         this.accessKey = accessKey;
     }
@@ -72,9 +72,7 @@ public class IpInformationFromIpapi implements IpInformationInterface {
     public List<String> retrieveCountryLanguages() {
         getData().get("location").asObject().get("languages");
 
-        ArrayList<String> languages = getLanguagesAsStringList();
-
-        return languages;
+        return getLanguagesAsStringList();
     }
 
     private ArrayList<String> getLanguagesAsStringList() {

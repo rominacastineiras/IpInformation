@@ -1,22 +1,22 @@
-package Model;
+package Infrastructure.MessageBrokers;
 
-import Interfaces.IpInformationRespositoryInterface;
+import Interfaces.IpInformationQueueInterface;
+import Model.IpInformation;
+import Model.IpInformationSystem;
 import com.eclipsesource.json.Json;
-import com.eclipsesource.json.JsonObject;
 import com.rabbitmq.client.*;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.Map;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeoutException;
 
-public class IpInformationQueue implements IpInformationQueueInterface{
+public class RabbitMQMessageBroker implements IpInformationQueueInterface {
 
-    private String name;
-    private String host;
-    private int port;
+    private final String name;
+    private final String host;
+    private final int port;
 
-    public IpInformationQueue(String name, String host, int port){
+    public RabbitMQMessageBroker(String name, String host, int port){
         this.name = name;
         this.host = host;
         this.port =port;
@@ -51,7 +51,7 @@ public class IpInformationQueue implements IpInformationQueueInterface{
                     AMQP.BasicProperties properties,
                     byte[] body) throws IOException {
 
-                String message = new String(body, "UTF-8");
+                String message = new String(body, StandardCharsets.UTF_8);
                 system.save(Json.parse(message).asObject());
                 long deliveryTag = envelope.getDeliveryTag();
                 channel.basicAck(deliveryTag, false);

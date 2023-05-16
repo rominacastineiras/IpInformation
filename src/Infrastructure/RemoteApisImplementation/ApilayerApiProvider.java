@@ -15,7 +15,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-public class IpInformationFromApilayer implements IpInformationInterface {
+public class ApilayerApiProvider implements IpInformationInterface {
 
     private final String currencyCode;
     private final String accessKey;
@@ -28,7 +28,7 @@ public class IpInformationFromApilayer implements IpInformationInterface {
         return url.contains("api.apilayer.com");
     }
 
-    public IpInformationFromApilayer(String currencyCode, String accessKey) {
+    public ApilayerApiProvider(String currencyCode, String accessKey) {
         this.currencyCode = currencyCode;
         this.accessKey = accessKey;
     }

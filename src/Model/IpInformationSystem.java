@@ -1,7 +1,10 @@
 package Model;
 
+import Infrastructure.MessageBrokers.NoMessageBroker;
+import Infrastructure.MessageBrokers.RabbitMQMessageBroker;
 import Infrastructure.Repositories.IpInformationInMemory;
 import Infrastructure.Repositories.IpInformationInMongoDB;
+import Interfaces.IpInformationQueueInterface;
 import Interfaces.IpInformationRespositoryInterface;
 import com.eclipsesource.json.JsonObject;
 import com.mongodb.MongoClientException;
@@ -57,7 +60,7 @@ public class IpInformationSystem {
     }
 
     private void initializeMessageBroker(Properties configuration) {
-        this.messageBroker = new IpInformationNonQueue();
+        this.messageBroker = new NoMessageBroker();
         String messageBrokerName = (String) configuration.getOrDefault("MESSAGE_BROKER", "");
 
         if(messageBrokerName.equals("RabbitMQ")){
@@ -65,7 +68,7 @@ public class IpInformationSystem {
             String messageBrokerHost = (String) configuration.getOrDefault("MB_HOST", "localhost");
             int messageBrokerPort = (int) configuration.getOrDefault("MB_PORT", 5672);
 
-            this.messageBroker = new IpInformationQueue(messageBrokerQueueName, messageBrokerHost, messageBrokerPort);
+            this.messageBroker = new RabbitMQMessageBroker(messageBrokerQueueName, messageBrokerHost, messageBrokerPort);
         }
 
     }

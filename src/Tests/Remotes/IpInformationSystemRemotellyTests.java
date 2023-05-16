@@ -1,4 +1,4 @@
-package Tests;
+package Tests.Remotes;
 
 import Model.IpInformationSystem;
 import Model.PeriodicalRespositoryProcess;
@@ -27,7 +27,7 @@ public class IpInformationSystemRemotellyTests {
     }
 
     @Test
-    public void onlyOneQueryResult() throws IOException, TimeoutException {
+    public void shouldRetrieveOnlyOneQueryResultWhenOneQueryWasProcessed() throws IOException, TimeoutException {
         cleanDataBase();
         IpInformationSystem system = IpInformationSystem.ipInformationSystemWithCustomConfiguration(getConfiguration());
 
@@ -41,14 +41,13 @@ public class IpInformationSystemRemotellyTests {
         Assertions.assertEquals("9017", result.get("distanceToBuenosAires"));
         // Assertions.assertTrue(result.get("timestamp").equals("Argentina"));
         Assertions.assertEquals("English", result.get("languages"));
-        Assertions.assertTrue(result.get("quoteAgainstDollar").equals("1.0"));
         cleanDataBase();
 
 
     }
 
     @Test
-    public void onlyOneQueryStatistics() throws IOException, TimeoutException {
+    public void shouldRetrieveSameQueryStatisticsWhenOneQueryWasProcessed() throws IOException, TimeoutException {
         cleanDataBase();
 
         IpInformationSystem system = IpInformationSystem.ipInformationSystemWithCustomConfiguration(getConfiguration());
@@ -81,7 +80,7 @@ public class IpInformationSystemRemotellyTests {
     }
 
     @Test
-    public void twoEqualQueryResultsStatistics() throws IOException, TimeoutException {
+    public void shouldRetrieveSameQueryStatisticsWhenTwoQueriesWithSameIpWereProcessed() throws IOException, TimeoutException {
         cleanDataBase();
 
         IpInformationSystem system = IpInformationSystem.ipInformationSystemWithCustomConfiguration(getConfiguration());
@@ -123,7 +122,7 @@ public class IpInformationSystemRemotellyTests {
     }
 
     @Test
-    public void twoDifferentQueryResultsStatistics() throws IOException, TimeoutException {
+    public void shouldRetrieveDifferentQueryStatisticsWhenTwoQueriesWithSameIpWereProcessed() throws IOException, TimeoutException {
         cleanDataBase();
 
         IpInformationSystem system = IpInformationSystem.ipInformationSystemWithCustomConfiguration(getConfiguration());

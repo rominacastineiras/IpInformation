@@ -1,4 +1,7 @@
-package Model;
+package Interfaces;
+
+import Model.IpInformation;
+import Model.IpInformationSystem;
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;

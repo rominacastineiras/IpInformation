@@ -1,8 +1,8 @@
 package Model;
 
-import Infrastructure.RemoteApisImplementation.IpInformationFromAbstractApi;
-import Infrastructure.RemoteApisImplementation.IpInformationFromApilayer;
-import Infrastructure.RemoteApisImplementation.IpInformationFromIpapi;
+import Infrastructure.RemoteApisImplementation.AbstractApiApiProvider;
+import Infrastructure.RemoteApisImplementation.ApilayerApiProvider;
+import Infrastructure.RemoteApisImplementation.IpapiApiProvider;
 import Interfaces.IpInformationInterface;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.ParseException;
@@ -56,13 +56,13 @@ public class IpInformationBuilder {
     private IpInformationInterface getProviderFor(String providerNameField) {
 
         String providerName = (String) configuration.getOrDefault(providerNameField, "");
-        if(IpInformationFromAbstractApi.handle(providerName))
+        if(AbstractApiApiProvider.handle(providerName))
             return apiInstanceProvider.getipinformationfromAbstractapi(ip);
         else
-            if(IpInformationFromIpapi.handle(providerName))
+            if(IpapiApiProvider.handle(providerName))
                 return apiInstanceProvider.getIpInformationFromIpapi(ip);
             else
-                if(IpInformationFromApilayer.handle(providerName))
+                if(ApilayerApiProvider.handle(providerName))
                     return apiInstanceProvider.getIpInformationFromApilayer(currency);
                 else
                     return apiInstanceProvider.getInformationProviderNotDefined();

@@ -1,9 +1,13 @@
-package Model;
+package Infrastructure.MessageBrokers;
+
+import Interfaces.IpInformationQueueInterface;
+import Model.IpInformation;
+import Model.IpInformationSystem;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class IpInformationNonQueue implements IpInformationQueueInterface{
+public class NoMessageBroker implements IpInformationQueueInterface {
 
     List<IpInformation> ipInformationCollection = new ArrayList<>();
     @Override

@@ -1,4 +1,4 @@
-package Tests;
+package Tests.Locals;
 
 import Model.IpInformationSystem;
 import Model.PeriodicalRespositoryProcess;

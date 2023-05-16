@@ -6,11 +6,11 @@ import com.eclipsesource.json.JsonObject;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class InformationProviderNotDefined implements IpInformationInterface {
+public class NotDefinedApiProvider implements IpInformationInterface {
     public static final String NOT_DEFINED = "Not defined";
     private final JsonObject defaultInformation;
 
-    public InformationProviderNotDefined(JsonObject defaultInformation) {
+    public NotDefinedApiProvider(JsonObject defaultInformation) {
         this.defaultInformation = defaultInformation;
     }
 

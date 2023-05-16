@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class IpInformationFromAbstractApi implements IpInformationInterface {
+public class AbstractApiApiProvider implements IpInformationInterface {
 
     private static final String NODATA = "No Data";
     private final String ip;
@@ -26,7 +26,7 @@ public class IpInformationFromAbstractApi implements IpInformationInterface {
         return url.contains("ipgeolocation.abstractapi.com");
     }
 
-    public IpInformationFromAbstractApi(String ip, String accessKey) {
+    public AbstractApiApiProvider(String ip, String accessKey) {
         this.ip = ip;
         this.accessKey = accessKey;
     }
