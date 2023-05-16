@@ -33,8 +33,9 @@ public class IpInformationInMongoDB  implements IpInformationRespositoryInterfac
         String userName = (String) configuration.getOrDefault("DB_USERNAME", "");
         String password = (String) configuration.getOrDefault("DB_PASSWORD", "");
         String collectionName = (String) configuration.getOrDefault("COLLECTION_NAME", "");
+        String cluster = (String) configuration.getOrDefault("CLUSTER", "");
 
-        MongoClient mongoClient = MongoClients.create("mongodb+srv://" + userName + ":" + password + "@cluster0.xok7qpl.mongodb.net/cafeDB");
+        MongoClient mongoClient = MongoClients.create("mongodb+srv://" + userName + ":" + password + "@" + cluster);
         MongoDatabase database = mongoClient.getDatabase("IpInformation");
 
         collection = database.getCollection(collectionName);
