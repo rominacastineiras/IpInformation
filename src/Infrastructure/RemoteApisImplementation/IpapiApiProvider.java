@@ -81,7 +81,6 @@ public class IpapiApiProvider implements IpInformationInterface {
 
     public String retrieveCountryCurrency() {
         return NODATA;
-
     }
 
     @Override

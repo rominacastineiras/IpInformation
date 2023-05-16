@@ -39,9 +39,7 @@ public class IpInformationSystemLocallyTests {
         Assertions.assertEquals(NODATA, result.get("countryIsoCode"));
         Assertions.assertEquals(NODATA, result.get("currency"));
         Assertions.assertEquals("7164", result.get("distanceToBuenosAires"));
-      //  Assertions.assertTrue(result.get("timestamp").equals("Argentina"));
         Assertions.assertEquals(NODATA, result.get("languages"));
-    //    Assertions.assertTrue(result.get("quoteAgainstDollar").equals("1.0"));
 
 
     }
@@ -71,14 +69,6 @@ public class IpInformationSystemLocallyTests {
         statistics = system.getAverageDistance();
         Assertions.assertEquals("7164.0", statistics.get("averageDistance"));
 
-    }
-
-    private static void waitSomeSeconds() {
-        try{
-            Thread.sleep(4000);
-        } catch (InterruptedException e) {
-            //Do nothing
-        }
     }
 
     @Test
@@ -141,4 +131,12 @@ public class IpInformationSystemLocallyTests {
     }
 
 
+
+    private static void waitSomeSeconds() {
+        try{
+            Thread.sleep(4000);
+        } catch (InterruptedException e) {
+            //Do nothing
+        }
+    }
 }

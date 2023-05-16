@@ -26,7 +26,7 @@ public class NotDefinedApiProvider implements IpInformationInterface {
 
     @Override
     public ArrayList<String> retrieveCountryLanguages() {
-        return new ArrayList<>(Collections.singleton(this.defaultInformation.getString("language", NOT_DEFINED))); //TODO: No se por que me obliga a poner esto del singleton
+        return new ArrayList<>(Collections.singleton(this.defaultInformation.getString("language", NOT_DEFINED)));
     }
 
     @Override

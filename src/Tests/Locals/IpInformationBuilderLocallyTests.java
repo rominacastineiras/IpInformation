@@ -54,7 +54,6 @@ public class IpInformationBuilderLocallyTests {
         informationBuilder.setCountryIsoCode();
 
         IpInformation ipInformation = informationBuilder.build();
-
         Assertions.assertTrue(ipInformation.countryNameIs("UnPais"));
         Assertions.assertTrue(ipInformation.countryIsoCodeIs("UnCodigoIso"));
     }
@@ -68,30 +67,11 @@ public class IpInformationBuilderLocallyTests {
         informationBuilder.setCountryCurrency();
 
         IpInformation ipInformation = informationBuilder.build();
-
         Assertions.assertTrue(ipInformation.countryNameIs("UnPais"));
         Assertions.assertTrue(ipInformation.countryIsoCodeIs("UnCodigoIso"));
         Assertions.assertTrue(ipInformation.countryCurrencyIs("UnaMoneda"));
    }
 
-  /*  @Test //TODO: ver como fijar el reloj
-    public void shouldRetrieveCountryTimeZone() {
-        IpInformationBuilder informationBuilder = IpInformationBuilder.basedOnConfiguration((new File("config.properties").getAbsolutePath()), "166.171.248.255");
-        informationBuilder.setIp("166.171.248.255");
-        informationBuilder.setCountryName();
-        informationBuilder.setCountryIsoCode();
-        informationBuilder.setCountryCurrency();
-        informationBuilder.setCountryTimezone();
-
-        IpInformation ipInformation = informationBuilder.build();
-
-        Assertions.assertTrue(ipInformation.countryNameIs("United States"));
-        Assertions.assertTrue(ipInformation.countryIsoCodeIs("US"));
-        Assertions.assertTrue(ipInformation.countryCurrencyIs("USD"));
-        Assertions.assertTrue(ipInformation.countryTimeZoneIs("USD"));
-                informationBuilder.setCountryTimeZone(); timezone.current_time
-
-    }*/
   @Test
   public void shouldRetrieveDistanceToBuenosAires() {
       IpInformationBuilder informationBuilder = IpInformationBuilder.basedOnConfigurationOrByDefault(this.getConfiguration(), DEFAULT_INFORMATION);
@@ -99,15 +79,12 @@ public class IpInformationBuilderLocallyTests {
       informationBuilder.setCountryName();
       informationBuilder.setCountryIsoCode();
       informationBuilder.setCountryCurrency();
-      //        informationBuilder.setCountryTimezone();
       informationBuilder.setDistanceToBuenosAires();
 
       IpInformation ipInformation = informationBuilder.build();
       Assertions.assertTrue(ipInformation.countryNameIs("UnPais"));
       Assertions.assertTrue(ipInformation.countryIsoCodeIs("UnCodigoIso"));
       Assertions.assertTrue(ipInformation.countryCurrencyIs("UnaMoneda"));
-      //                informationBuilder.setCountryTimeZone(); timezone.current_time
-
       Assertions.assertTrue(ipInformation.distanceToBuenosAiresIs(7164));
 
   }
@@ -118,7 +95,6 @@ public class IpInformationBuilderLocallyTests {
       informationBuilder.setCountryName();
       informationBuilder.setCountryIsoCode();
       informationBuilder.setCountryCurrency();
-      //        informationBuilder.setCountryTimezone();
       informationBuilder.setDistanceToBuenosAires();
       informationBuilder.setLanguages();
 
@@ -126,8 +102,6 @@ public class IpInformationBuilderLocallyTests {
       Assertions.assertTrue(ipInformation.countryNameIs("UnPais"));
       Assertions.assertTrue(ipInformation.countryIsoCodeIs("UnCodigoIso"));
       Assertions.assertTrue(ipInformation.countryCurrencyIs("UnaMoneda"));
-      //                informationBuilder.setCountryTimeZone(); timezone.current_time
-
       Assertions.assertTrue(ipInformation.distanceToBuenosAiresIs(7164));
       Assertions.assertTrue(ipInformation.languagesAre(List.of("unLenguaje")));
 
@@ -140,7 +114,6 @@ public class IpInformationBuilderLocallyTests {
       informationBuilder.setCountryName();
       informationBuilder.setCountryIsoCode();
       informationBuilder.setCountryCurrency();
-      //        informationBuilder.setCountryTimezone();
       informationBuilder.setDistanceToBuenosAires();
       informationBuilder.setLanguages();
       informationBuilder.setQuoteAgainstDollar();
@@ -149,36 +122,27 @@ public class IpInformationBuilderLocallyTests {
       Assertions.assertTrue(ipInformation.countryNameIs("UnPais"));
       Assertions.assertTrue(ipInformation.countryIsoCodeIs("UnCodigoIso"));
       Assertions.assertTrue(ipInformation.countryCurrencyIs("UnaMoneda"));
-      //                informationBuilder.setCountryTimeZone(); timezone.current_time
-
       Assertions.assertTrue(ipInformation.distanceToBuenosAiresIs(7164));
       Assertions.assertTrue(ipInformation.languagesAre(List.of("unLenguaje")));
       Assertions.assertTrue(ipInformation.quoteAgainstDollarIs(56.00));
 
   }  @Test
   public void cannotRetrieveQuoteAgainstDollarIfCurrencyIsNotSet() {
-        IpInformationBuilder informationBuilder = IpInformationBuilder.basedOnConfigurationOrByDefault(this.getConfiguration(), DEFAULT_INFORMATION);
+      IpInformationBuilder informationBuilder = IpInformationBuilder.basedOnConfigurationOrByDefault(this.getConfiguration(), DEFAULT_INFORMATION);
       informationBuilder.setIp("166.171.248.255");
       informationBuilder.setCountryName();
       informationBuilder.setCountryIsoCode();
-      //        informationBuilder.setCountryTimezone();
       informationBuilder.setDistanceToBuenosAires();
       informationBuilder.setLanguages();
       informationBuilder.setQuoteAgainstDollar();
 
       IpInformation ipInformation = informationBuilder.build();
-        Assertions.assertTrue(ipInformation.countryNameIs("UnPais"));
-        Assertions.assertTrue(ipInformation.countryIsoCodeIs("UnCodigoIso"));
-      //                informationBuilder.setCountryTimeZone(); timezone.current_time
-
-        Assertions.assertTrue(ipInformation.distanceToBuenosAiresIs(7164));
-        Assertions.assertTrue(ipInformation.languagesAre(List.of("unLenguaje")));
-        Assertions.assertTrue(ipInformation.quoteAgainstDollarIs(56.00));
+      Assertions.assertTrue(ipInformation.countryNameIs("UnPais"));
+      Assertions.assertTrue(ipInformation.countryIsoCodeIs("UnCodigoIso"));
+      Assertions.assertTrue(ipInformation.distanceToBuenosAiresIs(7164));
+      Assertions.assertTrue(ipInformation.languagesAre(List.of("unLenguaje")));
+      Assertions.assertTrue(ipInformation.quoteAgainstDollarIs(56.00));
 
   }
 
-    /*
-//
-//                apilayer
-        informationBuilder.setCountryQuoteAgainstDollar();*/
 }

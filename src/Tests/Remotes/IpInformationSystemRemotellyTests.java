@@ -42,8 +42,6 @@ public class IpInformationSystemRemotellyTests {
         // Assertions.assertTrue(result.get("timestamp").equals("Argentina"));
         Assertions.assertEquals("English", result.get("languages"));
         cleanDataBase();
-
-
     }
 
     @Test
@@ -73,14 +71,6 @@ public class IpInformationSystemRemotellyTests {
         Assertions.assertEquals("0.0", statistics.get("averageDistance"));
         cleanDataBase();
 
-    }
-
-    private static void waitSomeSeconds(int seconds) {
-        try{
-            Thread.sleep(seconds);
-        } catch (InterruptedException e) {
-            //Do nothing
-        }
     }
 
     @Test
@@ -167,6 +157,14 @@ public class IpInformationSystemRemotellyTests {
 
         for (Document result : results) {
             collection.deleteOne(result);
+        }
+    }
+
+    private static void waitSomeSeconds(int seconds) {
+        try{
+            Thread.sleep(seconds);
+        } catch (InterruptedException e) {
+            //Do nothing
         }
     }
 }
