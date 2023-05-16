@@ -10,58 +10,57 @@ import java.util.*;
 import static java.lang.Integer.parseInt;
 
 public class IpInformationInMemory implements IpInformationRespositoryInterface {
-    private final Map<String, Map<String, String>> collectionMap = new HashMap<>();
+    private final Map<String, Map<String, String>> countryIsoCodeAndIpInformationRelations = new HashMap<>();
     private final List<IpInformation> collection = new ArrayList<>();
     @Override
     public void connectIfNecessary() {
     }
 
-    private void createEstimationRelations(IpInformation result, Map<String, String> map) {
+    private void createStadisticsRelations(IpInformation result, Map<String, String> map) {
         if(result != null) {
             map.put("country_name", result.getCountryName());
             map.put("country_code", result.getCountryCode());
             map.put("distance", String.valueOf(result.distanceToBuenosAires()));
-            map.put("invocations", (collectionMap.get(result.getCountryCode()).get("invocations")));
+            map.put("invocations", (countryIsoCodeAndIpInformationRelations.get(result.getCountryCode()).get("invocations")));
         }else{
             map.put("Info", "Todavía no hay estadísticas, consulte más tarde");
         }
     }
 
-    static class DistanceComparator implements java.util.Comparator<IpInformation>{
+    static class AscendentDistanceComparator implements java.util.Comparator<IpInformation>{
         @Override
         public int compare(IpInformation a, IpInformation b) {
             return a.distanceToBuenosAires() - b.distanceToBuenosAires();
         }
     }
-    static class DistanceComparatorReverse implements java.util.Comparator<IpInformation>{
+    static class DescendentDistanceComparator implements java.util.Comparator<IpInformation>{
         @Override
         public int compare(IpInformation a, IpInformation b) {
             return b.distanceToBuenosAires() - a.distanceToBuenosAires();
         }
     }
 
-    @Override
-    public Map<String, String> getMostFarCountry() {
-
-        collection.sort(new DistanceComparatorReverse());
+    private Map<String, String> getStadisticsRelations() {
         Map<String, String> map = new HashMap<>();
         Optional<IpInformation> ipInformation = collection.stream().findFirst();
 
-        ipInformation.ifPresent(information -> createEstimationRelations(information, map));
+        ipInformation.ifPresent(information -> createStadisticsRelations(information, map));
 
         return map;
     }
 
     @Override
+    public Map<String, String> getMostFarCountry() {
+
+        collection.sort(new DescendentDistanceComparator());
+        return getStadisticsRelations();
+    }
+
+    @Override
     public Map<String, String> getLeastFarCountry() {
 
-        collection.sort(new DistanceComparator());
-        Map<String, String> map = new HashMap<>();
-        Optional<IpInformation> ipInformation = collection.stream().findFirst();
-
-        ipInformation.ifPresent(information -> createEstimationRelations(information, map));
-
-        return map;
+        collection.sort(new AscendentDistanceComparator());
+        return getStadisticsRelations();
     }
 
     @Override
@@ -70,9 +69,9 @@ public class IpInformationInMemory implements IpInformationRespositoryInterface 
         int divisor = 0;
         Map<String, String> map = new HashMap<>();
 
-        for(int i = 0; i < collectionMap.size(); i++){
-            operando = operando + collection.get(i).distanceToBuenosAires() *  parseInt((collectionMap.get(collection.get(i).getCountryCode()).get("invocations")));
-            divisor = divisor +  parseInt((collectionMap.get(collection.get(i).getCountryCode()).get("invocations")));
+        for(int i = 0; i < countryIsoCodeAndIpInformationRelations.size(); i++){
+            operando = operando + collection.get(i).distanceToBuenosAires() *  parseInt((countryIsoCodeAndIpInformationRelations.get(collection.get(i).getCountryCode()).get("invocations")));
+            divisor = divisor +  parseInt((countryIsoCodeAndIpInformationRelations.get(collection.get(i).getCountryCode()).get("invocations")));
         }
         map.put("averageDistance",String.valueOf(operando / divisor));
 
@@ -106,19 +105,19 @@ public class IpInformationInMemory implements IpInformationRespositoryInterface 
 
         Map<String, String> result = ipInformation.result();
 
-        Map<String, String> ipInformationFound = collectionMap.get(ipInformation.getCountryCode());
+        Map<String, String> ipInformationFound = countryIsoCodeAndIpInformationRelations.get(ipInformation.getCountryCode());
 
         int invocations = 1;
 
         if(ipInformationFound != null){
-            updateEstimation(result, ipInformationFound);
+            updateStadistic(result, ipInformationFound);
         }else{
-            insertEstimation(result, invocations);
+            insertStadistic(result, invocations);
             collection.add(ipInformation);
         }
     }
 
-    private void insertEstimation(Map<String, String> result, int invocations) {
+    private void insertStadistic(Map<String, String> result, int invocations) {
         Map<String, String> someIpInformation = new HashMap<>();
         someIpInformation.put("country_name", result.get("countryName"));
         someIpInformation.put("country_code", result.get("countryIsoCode"));
@@ -126,15 +125,15 @@ public class IpInformationInMemory implements IpInformationRespositoryInterface 
         someIpInformation.put("invocations", String.valueOf(invocations));
         someIpInformation.put("timestamp", result.get("timestamp"));
 
-        collectionMap.put(result.get("countryIsoCode"), someIpInformation);
+        countryIsoCodeAndIpInformationRelations.put(result.get("countryIsoCode"), someIpInformation);
 
     }
 
-    private void updateEstimation(Map<String, String> result, Map<String, String> ipInformationFound) {
+    private void updateStadistic(Map<String, String> result, Map<String, String> ipInformationFound) {
         int invocations;
         invocations = parseInt(ipInformationFound.get("invocations"));
         invocations++;
         ipInformationFound.put("invocations", String.valueOf(invocations));
-        collectionMap.put(result.get("countryIsoCode"), ipInformationFound);
+        countryIsoCodeAndIpInformationRelations.put(result.get("countryIsoCode"), ipInformationFound);
     }
 }

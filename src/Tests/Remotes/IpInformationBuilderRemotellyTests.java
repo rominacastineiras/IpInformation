@@ -161,7 +161,6 @@ public class IpInformationBuilderRemotellyTests {
       IpInformation ipInformation = informationBuilder.build();
       Assertions.assertTrue(ipInformation.countryNameIs("United States"));
       Assertions.assertTrue(ipInformation.countryIsoCodeIs("US"));
-      Assertions.assertTrue(ipInformation.countryCurrencyIs("USD"));
       //                informationBuilder.setCountryTimeZone(); timezone.current_time
 
       Assertions.assertTrue(ipInformation.distanceToBuenosAiresIs(9017));

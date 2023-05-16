@@ -54,11 +54,7 @@ public class IpInformationSystemLocallyTests {
         new PeriodicalRespositoryProcess(system).start();
 
         system.newQueryFor("130.41.97.255");
-        try{
-            Thread.sleep(4000);
-        } catch (InterruptedException e) {
-            //Do nothing
-        }
+        waitSomeSeconds();
         Map<String, String> statistics = system.getMostFarCountry();
 
         Assertions.assertEquals(NODATA, statistics.get("country_name"));
@@ -77,6 +73,14 @@ public class IpInformationSystemLocallyTests {
 
     }
 
+    private static void waitSomeSeconds() {
+        try{
+            Thread.sleep(4000);
+        } catch (InterruptedException e) {
+            //Do nothing
+        }
+    }
+
     @Test
     public void twoEqualQueryResultsStatistics() throws IOException, TimeoutException {
 
@@ -87,11 +91,7 @@ public class IpInformationSystemLocallyTests {
         system.newQueryFor("130.41.97.255");
         system.newQueryFor("130.41.97.255");
 
-        try{
-            Thread.sleep(4000);
-        } catch (InterruptedException e) {
-            //Do nothing
-        }
+        waitSomeSeconds();
 
         Map<String, String> statistics = system.getMostFarCountry();
 
@@ -121,11 +121,7 @@ public class IpInformationSystemLocallyTests {
         system.newQueryFor("130.41.97.255");
         system.newQueryFor("192.199.248.75");
 
-        try{
-            Thread.sleep(4000);
-        } catch (InterruptedException e) {
-            //Do nothing
-        }
+        waitSomeSeconds();
         Map<String, String> statistics = system.getMostFarCountry();
 
         Assertions.assertEquals(NODATA, statistics.get("country_name"));

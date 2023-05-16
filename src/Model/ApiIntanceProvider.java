@@ -15,11 +15,11 @@ public class ApiIntanceProvider {
     private final Map<String, IpapiApiProvider>  ipsForIpapi = new HashMap<>();
     private final Map<String, ApilayerApiProvider> ipsForApilayer = new HashMap<>();
 
-    private final Properties propiedades;
+    private final Properties configuration;
     private final JsonObject defaultJson;
 
-    public ApiIntanceProvider(Properties propiedades, JsonObject defaultJson) {
-        this.propiedades = propiedades;
+    public ApiIntanceProvider(Properties configuration, JsonObject defaultJson) {
+        this.configuration = configuration;
         this.defaultJson = defaultJson;
     }
 
@@ -29,7 +29,7 @@ public class ApiIntanceProvider {
         if(ipsForApilayer.get(currency) != null)
             apilayerApiProvider = ipsForApilayer.get(currency);
         else {
-            apilayerApiProvider = new ApilayerApiProvider(currency, propiedades.getProperty("APILAYER_KEY"));
+            apilayerApiProvider = new ApilayerApiProvider(currency, configuration.getProperty("APILAYER_KEY"));
             ipsForApilayer.put(currency, apilayerApiProvider);
         }
         return apilayerApiProvider;
@@ -40,7 +40,7 @@ public class ApiIntanceProvider {
         if(ipsForIpapi.get(ip) != null)
             ipapiApiProvider = ipsForIpapi.get(ip);
         else {
-            ipapiApiProvider = new IpapiApiProvider(ip, propiedades.getProperty("IPAPI_ACCESS_KEY"));
+            ipapiApiProvider = new IpapiApiProvider(ip, configuration.getProperty("IPAPI_ACCESS_KEY"));
             ipsForIpapi.put(ip, ipapiApiProvider);
         }
         return ipapiApiProvider;
@@ -52,7 +52,7 @@ public class ApiIntanceProvider {
         if(ipsForAbstractApi.get(ip) != null)
             abstractApiApiProvider = ipsForAbstractApi.get(ip);
         else {
-            abstractApiApiProvider = new AbstractApiApiProvider(ip, propiedades.getProperty("ABSTRACTAPI_ACCESS_KEY"));
+            abstractApiApiProvider = new AbstractApiApiProvider(ip, configuration.getProperty("ABSTRACTAPI_ACCESS_KEY"));
             ipsForAbstractApi.put(ip, abstractApiApiProvider);
         }
         return abstractApiApiProvider;

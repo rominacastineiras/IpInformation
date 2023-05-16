@@ -7,16 +7,16 @@ import Infrastructure.Repositories.IpInformationInMongoDB;
 import Interfaces.IpInformationQueueInterface;
 import Interfaces.IpInformationRespositoryInterface;
 import com.eclipsesource.json.JsonObject;
-import com.mongodb.MongoClientException;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeoutException;
+
+import static java.lang.Integer.parseInt;
 
 public class IpInformationSystem {
 
@@ -66,9 +66,9 @@ public class IpInformationSystem {
         if(messageBrokerName.equals("RabbitMQ")){
             String messageBrokerQueueName = (String) configuration.getOrDefault("MB_QUEUE_NAME", "ip_information");
             String messageBrokerHost = (String) configuration.getOrDefault("MB_HOST", "localhost");
-            int messageBrokerPort = (int) configuration.getOrDefault("MB_PORT", 5672);
+            String messageBrokerPort = (String) configuration.getOrDefault("MB_PORT", "5672");
 
-            this.messageBroker = new RabbitMQMessageBroker(messageBrokerQueueName, messageBrokerHost, messageBrokerPort);
+            this.messageBroker = new RabbitMQMessageBroker(messageBrokerQueueName, messageBrokerHost, parseInt(messageBrokerPort));
         }
 
     }
@@ -86,7 +86,7 @@ public class IpInformationSystem {
     public void newQueryFor(String ip) throws IOException, TimeoutException {
         repository.connectIfNecessary();
 
-        builder.setIp(ip);
+        builder.setIp(ip.trim());
         builder.setCountryName();
         builder.setCountryIsoCode();
         builder.setCountryCurrency();
@@ -102,11 +102,18 @@ public class IpInformationSystem {
 
         result = ipInformation.result();
     }
+    public static void waitSomeSeconds(int seconds) {
+        try{
+            Thread.sleep(seconds);
+        } catch (InterruptedException e) {
+            //Do nothing
+        }
+    }
 
-    public String showResult() throws InterruptedException {
+    public String showResult() {
 
         if(repository.isInMemory())
-            Thread.sleep(2000);
+            IpInformationSystem.waitSomeSeconds(2000);
 
 
         return "Fecha y hora: " + LocalDateTime.now() + "\n" +
@@ -120,20 +127,12 @@ public class IpInformationSystem {
     }
 
     public Map<String, String> getMostFarCountry() {
-
-        Map<String, String> mostFarCountry = new HashMap<>();
-        try{
-            mostFarCountry = repository.getMostFarCountry();
-        } catch(MongoClientException e){
-            System.out.println("Por favor consulte nuevamente");
-        }
-
-        return mostFarCountry;
+        return repository.getMostFarCountry();
     }
 
-    public String showMostFarCountry() throws InterruptedException {
+    public String showMostFarCountry() {
         if(repository.isInMemory())
-            Thread.sleep(2000);
+            IpInformationSystem.waitSomeSeconds(2000);
 
         Map<String, String> mostFarCountryInformation=  this.getMostFarCountry();
 
@@ -148,20 +147,11 @@ public class IpInformationSystem {
         }
     }
     public Map<String, String> getLeastFarCountry() {
-
-
-        Map<String, String> leastFarCountry = new HashMap<>();
-        try{
-            leastFarCountry = repository.getLeastFarCountry();
-        } catch(MongoClientException e){
-            System.out.println("Por favor consulte nuevamente");
-        }
-
-        return leastFarCountry;
+        return repository.getLeastFarCountry();
     }
-    public String showLeastFarCountry() throws InterruptedException {
+    public String showLeastFarCountry() {
         if(repository.isInMemory())
-            Thread.sleep(2000);
+            IpInformationSystem.waitSomeSeconds(2000);
         Map<String, String> leastFarCountryInformation=  this.getLeastFarCountry();
 
         String information = leastFarCountryInformation.get("Info");
@@ -178,26 +168,18 @@ public class IpInformationSystem {
 
 
     public Map<String, String> getAverageDistance() {
-
-        Map<String, String> averageDistance = new HashMap<>();
-        try{
-            averageDistance = repository.getAverageDistance();
-        } catch(MongoClientException e){
-            System.out.println("Por favor consulte nuevamente");
-        }
-
-        return averageDistance;
+        return repository.getAverageDistance();
     }
-    public String showAverageDistance() throws InterruptedException {
+    public String showAverageDistance() {
         if(repository.isInMemory())
-            Thread.sleep(2000);
+            IpInformationSystem.waitSomeSeconds(2000);
         Map<String, String> averageDistance=  this.getAverageDistance();
 
         String information = averageDistance.get("Info");
         if ( information!= null)
             return information;
         else{
-            return "Distancia Promedio: " + averageDistance.get("averageDistance");
+            return averageDistance.get("averageDistance");
         }
     }
 
@@ -206,13 +188,7 @@ public class IpInformationSystem {
     }
 
     public String lastPersistedIpTimestamp() {
-        String lastPersistedIpTimestamp = "";
-        try{
-            lastPersistedIpTimestamp = repository.lastPersistedIpTimestamp();
-        } catch(MongoClientException e){
-            System.out.println("Por favor consulte nuevamente");
-        }
-        return lastPersistedIpTimestamp;
+        return repository.lastPersistedIpTimestamp();
     }
 
     public void save(JsonObject object) {

@@ -55,11 +55,7 @@ public class IpInformationSystemRemotellyTests {
         new PeriodicalRespositoryProcess(system).start();
 
         system.newQueryFor("130.41.97.255");
-        try{
-            Thread.sleep(4000);
-        } catch (InterruptedException e) {
-            //Do nothing
-        }
+        waitSomeSeconds(4000);
         Map<String, String> statistics = system.getMostFarCountry();
 
         Assertions.assertEquals("Argentina", statistics.get("country_name"));
@@ -79,6 +75,14 @@ public class IpInformationSystemRemotellyTests {
 
     }
 
+    private static void waitSomeSeconds(int seconds) {
+        try{
+            Thread.sleep(seconds);
+        } catch (InterruptedException e) {
+            //Do nothing
+        }
+    }
+
     @Test
     public void shouldRetrieveSameQueryStatisticsWhenTwoQueriesWithSameIpWereProcessed() throws IOException, TimeoutException {
         cleanDataBase();
@@ -88,19 +92,11 @@ public class IpInformationSystemRemotellyTests {
         new PeriodicalRespositoryProcess(system).start();
 
         system.newQueryFor("130.41.97.255");
-        try{
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            //Do nothing
-        }
+        waitSomeSeconds(2000);
 
         system.newQueryFor("130.41.97.255");
 
-        try{
-            Thread.sleep(4000);
-        } catch (InterruptedException e) {
-            //Do nothing
-        }
+        waitSomeSeconds(4000);
 
         Map<String, String> statistics = system.getMostFarCountry();
 
@@ -130,17 +126,9 @@ public class IpInformationSystemRemotellyTests {
         new PeriodicalRespositoryProcess(system).start();
 
         system.newQueryFor("130.41.97.255");
-        try{
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            //Do nothing
-        }
+        waitSomeSeconds(2000);
         system.newQueryFor("192.199.248.75");
-        try{
-            Thread.sleep(4000);
-        } catch (InterruptedException e) {
-            //Do nothing
-        }
+        waitSomeSeconds(4000);
 
         Map<String, String> statistics = system.getMostFarCountry();
 
@@ -169,10 +157,11 @@ public class IpInformationSystemRemotellyTests {
 
         String userName = (String) configuration.getOrDefault("DB_USERNAME", "");
         String password = (String) configuration.getOrDefault("DB_PASSWORD", "");
+        String collectionName = (String) configuration.getOrDefault("COLLECTION_NAME", "");
 
         MongoClient mongoClient = MongoClients.create("mongodb+srv://" + userName + ":" + password + "@cluster0.xok7qpl.mongodb.net/cafeDB");
         MongoDatabase database = mongoClient.getDatabase("IpInformation");
-        MongoCollection<Document> collection = database.getCollection("estimations");
+        MongoCollection<Document> collection = database.getCollection(collectionName);
         FindIterable<Document> results = collection.find();
 
 

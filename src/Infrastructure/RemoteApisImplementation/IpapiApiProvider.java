@@ -70,12 +70,6 @@ public class IpapiApiProvider implements IpInformationInterface {
 
     @Override
     public List<String> retrieveCountryLanguages() {
-        getData().get("location").asObject().get("languages");
-
-        return getLanguagesAsStringList();
-    }
-
-    private ArrayList<String> getLanguagesAsStringList() {
         JsonArray languagesCollection = getData().get("location").asObject().get("languages").asArray();
         ArrayList<String> languages = new ArrayList<>();
 

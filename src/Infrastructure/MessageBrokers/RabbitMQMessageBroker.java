@@ -29,12 +29,9 @@ public class RabbitMQMessageBroker implements IpInformationQueueInterface {
         factory.setHost(host);
         factory.setPort(port);
         channel.queueDeclare(name, false, false, false, null);
-
-            channel.basicPublish("", name, null, result.toJson().toString().getBytes());
-            channel.close();
-            connection.close();
-
-
+        channel.basicPublish("", name, null, result.toJson().toString().getBytes());
+        channel.close();
+        connection.close();
     }
 
     public void retrieveFromQueue(IpInformationSystem system) throws IOException, TimeoutException {
@@ -43,7 +40,13 @@ public class RabbitMQMessageBroker implements IpInformationQueueInterface {
         factory.setPort(port);
         Connection connection = factory.newConnection();
         Channel channel = connection.createChannel();
-        DefaultConsumer consumer = new DefaultConsumer(channel) {
+        DefaultConsumer consumer = getDefaultConsumer(system, channel);
+
+        channel.basicConsume(name, false, consumer);
+    }
+
+    private static DefaultConsumer getDefaultConsumer(IpInformationSystem system, Channel channel) {
+        return new DefaultConsumer(channel) {
             @Override
             public void handleDelivery(
                     String consumerTag,
@@ -58,7 +61,5 @@ public class RabbitMQMessageBroker implements IpInformationQueueInterface {
 
             }
         };
-
-        channel.basicConsume(name, false, consumer);
     }
 }

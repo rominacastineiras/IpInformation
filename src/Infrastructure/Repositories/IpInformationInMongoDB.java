@@ -32,16 +32,17 @@ public class IpInformationInMongoDB  implements IpInformationRespositoryInterfac
 
         String userName = (String) configuration.getOrDefault("DB_USERNAME", "");
         String password = (String) configuration.getOrDefault("DB_PASSWORD", "");
+        String collectionName = (String) configuration.getOrDefault("COLLECTION_NAME", "");
 
         MongoClient mongoClient = MongoClients.create("mongodb+srv://" + userName + ":" + password + "@cluster0.xok7qpl.mongodb.net/cafeDB");
         MongoDatabase database = mongoClient.getDatabase("IpInformation");
 
-        collection = database.getCollection("estimations");
+        collection = database.getCollection(collectionName);
 
 
     }
 
-    private static void createEstimationRelations(Document result, Map<String, String> map) {
+    private static void createStadisticsRelations(Document result, Map<String, String> map) {
         if(result != null) {
             map.put("country_name", (String) result.get("country_name"));
             map.put("country_code", (String) result.get("country_code"));
@@ -54,47 +55,69 @@ public class IpInformationInMongoDB  implements IpInformationRespositoryInterfac
 
     @Override
     public Map<String, String> getMostFarCountry() {
-        Document result = collection.find().sort(descending("distance")).first();
         Map<String, String> map = new HashMap<>();
-
-        createEstimationRelations(result, map);
+        try{
+            Document result = collection.find().sort(descending("distance")).first();
+            createStadisticsRelations(result, map);
+        } catch(MongoClientException e){
+            map.put("Info", "Por favor consulte nuevamente");
+        }
         return map;
     }
 
     @Override
     public Map<String, String> getLeastFarCountry() {
-        Document result = collection.find().sort(ascending("distance")).first();
-        Map<String, String> map = new HashMap<>();
 
-        createEstimationRelations(result, map);
-        return map;    }
+        Map<String, String> map = new HashMap<>();
+        try{
+            Document result = collection.find().sort(ascending("distance")).first();
+            createStadisticsRelations(result, map);
+        } catch(MongoClientException e){
+            map.put("Info", "Por favor consulte nuevamente");
+        }
+        return map;
+    }
 
     private static void calculateAverage(MongoCursor<Document> cursor, double operando, int divisor, Map<String, String> map) {
-        while (cursor.hasNext()) {
-            Document elementOnStudy = cursor.next();
-            operando = operando + parseDouble((String) elementOnStudy.get("distance")) *  parseInt((String) elementOnStudy.get("invocations"));
-            divisor = divisor + parseInt((String) elementOnStudy.get("invocations"));
+        if(!cursor.hasNext())
+            map.put("Info", "Por favor consulte nuevamente");
+        else {
+            while (cursor.hasNext()) {
+                Document elementOnStudy = cursor.next();
+                operando = operando + parseDouble((String) elementOnStudy.get("distance")) * parseInt((String) elementOnStudy.get("invocations"));
+                divisor = divisor + parseInt((String) elementOnStudy.get("invocations"));
+            }
+            map.put("averageDistance",String.valueOf(operando / divisor));
         }
 
-        map.put("averageDistance",String.valueOf(operando / divisor));
     }
 
     @Override
     public Map<String, String> getAverageDistance() {
-        FindIterable<Document> results = collection.find();
-        MongoCursor<Document> cursor = results.iterator();
-        double operando = 0.00;
-        int divisor = 0;
         Map<String, String> map = new HashMap<>();
+       try{
+            FindIterable<Document> results = collection.find();
+            MongoCursor<Document> cursor = results.iterator();
+            double operando = 0.00;
+            int divisor = 0;
 
-        calculateAverage(cursor, operando, divisor, map);
+            calculateAverage(cursor, operando, divisor, map);
+        } catch(MongoClientException e){
+        map.put("Info", "Por favor consulte nuevamente");
+    }
         return map;
+
     }
 
     @Override
     public String lastPersistedIpTimestamp() {
-        Document result = collection.find().sort(descending("timestamp")).first();
-        return result.get("timestamp").toString();
+     try {
+         Document result = collection.find().sort(descending("timestamp")).first();
+         return result.get("timestamp").toString();
+
+     } catch(MongoClientException | NullPointerException e) {
+         return "Por favor consulte nuevamente";
+     }
     }
 
     @Override
@@ -123,17 +146,17 @@ public class IpInformationInMongoDB  implements IpInformationRespositoryInterfac
             Document ipInformationFound = collection.find(new Document("country_code", result.get("countryIsoCode"))).first();
             if(ipInformationFound == null){
                 int invocations = 1;
-                insertEstimation(result, invocations);
+                insertStadistic(result, invocations);
             }else
-                updateEstimation(result, ipInformationFound);
+                updateStadistic(result, ipInformationFound);
         } catch(MongoClientException e){
             int invocations = 1;
-            insertEstimation(result, invocations);
+            insertStadistic(result, invocations);
         }
 
     }
 
-    private void insertEstimation(Map<String, String> result, int invocations) {
+    private void insertStadistic(Map<String, String> result, int invocations) {
         Document someIpInformation = new Document("_id", new ObjectId());
         someIpInformation.append("country_name", result.get("countryName"))
                 .append("country_code", result.get("countryIsoCode"))
@@ -144,7 +167,7 @@ public class IpInformationInMongoDB  implements IpInformationRespositoryInterfac
         collection.insertOne(someIpInformation);
     }
 
-    private void updateEstimation(Map<String, String> result, Document ipInformationFound) {
+    private void updateStadistic(Map<String, String> result, Document ipInformationFound) {
         int invocations;
         invocations = parseInt((String) ipInformationFound.get("invocations"));
         invocations++;

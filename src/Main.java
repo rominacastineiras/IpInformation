@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException, TimeoutException, InterruptedException {
+    public static void main(String[] args) throws IOException, TimeoutException {
 
         IpInformationSystem system = IpInformationSystem.ipInformationSystem();
 
@@ -17,7 +17,7 @@ public class Main {
 
         new PeriodicalRespositoryProcess(system).start();
 
-        waitSomeSeconds(2000);
+        waitSomeSeconds(5000);
 
         showResultsAndAskToContinue(system);
 
@@ -70,7 +70,8 @@ public class Main {
         }
     }
 
-    private static void showResultsAndAskToContinue(IpInformationSystem system) throws IOException, TimeoutException, InterruptedException {
+    private static void showResultsAndAskToContinue(IpInformationSystem system) throws IOException, TimeoutException {
+
         String ip;
         System.out.println("Resultado de consulta: " + "\n" + system.showResult());
 
@@ -89,18 +90,18 @@ public class Main {
 
         System.out.println("¿Desea realizar otra consulta? S/N");
 
-        String consultaParaSeguir;
+        String askToContinue;
 
-        Scanner entradaEscaner = new Scanner(System.in);
+        Scanner scan = new Scanner(System.in);
 
-        consultaParaSeguir = entradaEscaner.nextLine();
+        askToContinue = scan.nextLine();
 
-        if(consultaParaSeguir.equals("S") || consultaParaSeguir.equals("s")) {
+        if(askToContinue.equals("S") || askToContinue.equals("s")) {
             System.out.println("Por favor ingrese una ip válida:");
 
-            entradaEscaner = new Scanner(System.in);
+            scan = new Scanner(System.in);
 
-            ip = entradaEscaner.nextLine();
+            ip = scan.nextLine();
             system.newQueryFor(ip);
             showResultsAndAskToContinue(system);
         }
