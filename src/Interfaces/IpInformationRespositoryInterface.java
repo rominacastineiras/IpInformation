@@ -19,4 +19,6 @@ public interface IpInformationRespositoryInterface {
     Map<String, String> getAverageDistance();
 
     String lastPersistedIpTimestamp();
+
+    boolean isInMemory();
 }

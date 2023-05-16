@@ -41,7 +41,7 @@ public class InformationProviderNotDefined implements IpInformationInterface {
 
     @Override
     public double retrieveQuoteAgainstDollar() {
-               return this.defaultInformation.getDouble("", 0.00);
+               return this.defaultInformation.getDouble("quoteAgainstDollar", 0.00);
     }
 
     @Override

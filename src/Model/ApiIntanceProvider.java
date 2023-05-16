@@ -16,23 +16,13 @@ public class ApiIntanceProvider {
     private final Map<String, IpInformationFromApilayer> ipsForApilayer = new HashMap<>();
 
     private final Properties propiedades;
+    private final JsonObject defaultJson;
 
-    private static final String NODATA = "No Data";
-
-    public ApiIntanceProvider(Properties propiedades) {
+    public ApiIntanceProvider(Properties propiedades, JsonObject defaultJson) {
         this.propiedades = propiedades;
+        this.defaultJson = defaultJson;
     }
 
-    private static final  JsonObject DEFAULT_INFORMATION = new JsonObject()
-            .add("countryName",NODATA)
-            .add("countryIsoCode",NODATA)
-            .add("currency",NODATA)
-            .add("timezone",NODATA)
-            .add("longitude",0.00)
-            .add("latitude",0.00)
-            .add("languages", NODATA)
-            .add("timezone", NODATA)
-            .add("quoteAgainstDollar", 0.00);
 
     IpInformationFromApilayer getIpInformationFromApilayer(String currency) {
         IpInformationFromApilayer ipInformationFromApilayer;
@@ -69,7 +59,7 @@ public class ApiIntanceProvider {
     }
     InformationProviderNotDefined getInformationProviderNotDefined() {
         if(informationProviderNotDefined == null)
-            informationProviderNotDefined = new InformationProviderNotDefined(DEFAULT_INFORMATION);
+            informationProviderNotDefined = new InformationProviderNotDefined(defaultJson);
 
         return informationProviderNotDefined;
     }

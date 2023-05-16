@@ -1,9 +1,6 @@
-import Infrastructure.Repositories.IpInformationInMongoDB;
-import Model.IpInformationBuilder;
 import Model.IpInformationSystem;
 import Model.PeriodicalRespositoryProcess;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
 import java.util.concurrent.TimeoutException;
@@ -12,8 +9,9 @@ import java.util.regex.Pattern;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException, TimeoutException {
-        IpInformationSystem system = new IpInformationSystem();
+    public static void main(String[] args) throws IOException, TimeoutException, InterruptedException {
+
+        IpInformationSystem system = IpInformationSystem.ipInformationSystem();
 
         startQueryingAndShowMenu(args, system);
 
@@ -28,6 +26,7 @@ public class Main {
     private static void startQueryingAndShowMenu(String[] args, IpInformationSystem system) throws IOException, TimeoutException {
         String ip;
         if(args.length != 0) {
+            System.out.println("Bienvenido/a, por favor espere a que se termine de ejecutar la consulta.");
             system.newQueryFor(args[0]);
 
         }else {
@@ -71,7 +70,7 @@ public class Main {
         }
     }
 
-    private static void showResultsAndAskToContinue(IpInformationSystem system) throws IOException, TimeoutException {
+    private static void showResultsAndAskToContinue(IpInformationSystem system) throws IOException, TimeoutException, InterruptedException {
         String ip;
         System.out.println("Resultado de consulta: " + "\n" + system.showResult());
 

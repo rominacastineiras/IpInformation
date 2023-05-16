@@ -5,9 +5,6 @@ import Infrastructure.Repositories.IpInformationInMongoDB;
 import Interfaces.IpInformationRespositoryInterface;
 import com.eclipsesource.json.JsonObject;
 import com.mongodb.MongoClientException;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
 
 import java.io.File;
 import java.io.FileReader;
@@ -29,41 +26,48 @@ public class IpInformationSystem {
         return "config.properties";
     }
 
-    public IpInformationSystem(){
-        Properties configuration = getConfiguration();
 
-        this.builder = IpInformationBuilder.basedOnConfiguration(configuration);
+    public static IpInformationSystem ipInformationSystemWithCustomConfiguration(Properties configuration){
 
-        messageBroker = initializeMessageBroker(configuration);
+        return new IpInformationSystem(configuration);
 
-        repository = initializeRepository(configuration);
+    }
+        public static IpInformationSystem ipInformationSystem(){
+
+        return new IpInformationSystem(getConfiguration());
 
     }
 
-    private IpInformationRespositoryInterface initializeRepository(Properties configuration) {
-        final IpInformationRespositoryInterface repository = new IpInformationInMemory();
+    private IpInformationSystem(Properties configuration){
+        this.builder = IpInformationBuilder.basedOnConfiguration(configuration);
+
+        initializeMessageBroker(configuration);
+
+        initializeRepository(configuration);
+
+    }
+
+    private void initializeRepository(Properties configuration) {
+        this.repository = new IpInformationInMemory();
 
         String repositoryName = (String) configuration.getOrDefault("REPOSITORY", "");
 
         if(repositoryName.equals("MongoDB"))
             this.repository = new IpInformationInMongoDB(configuration);
-
-        return repository;
     }
 
-    private IpInformationQueueInterface initializeMessageBroker(Properties configuration) {
+    private void initializeMessageBroker(Properties configuration) {
         this.messageBroker = new IpInformationNonQueue();
         String messageBrokerName = (String) configuration.getOrDefault("MESSAGE_BROKER", "");
 
         if(messageBrokerName.equals("RabbitMQ")){
-            String messageBrokerQueueName = (String) configuration.getOrDefault("MESSAGE_BROKER", "ip_information");
-            String messageBrokerHost = (String) configuration.getOrDefault("MESSAGE_BROKER", "localhost");
-            int messageBrokerPort = (int) configuration.getOrDefault("MESSAGE_BROKER", 5672);
+            String messageBrokerQueueName = (String) configuration.getOrDefault("MB_QUEUE_NAME", "ip_information");
+            String messageBrokerHost = (String) configuration.getOrDefault("MB_HOST", "localhost");
+            int messageBrokerPort = (int) configuration.getOrDefault("MB_PORT", 5672);
 
             this.messageBroker = new IpInformationQueue(messageBrokerQueueName, messageBrokerHost, messageBrokerPort);
-        };
+        }
 
-        return messageBroker;
     }
 
     private static Properties getConfiguration() {
@@ -96,7 +100,11 @@ public class IpInformationSystem {
         result = ipInformation.result();
     }
 
-    public String showResult(){
+    public String showResult() throws InterruptedException {
+
+        if(repository.isInMemory())
+            Thread.sleep(2000);
+
 
         return "Fecha y hora: " + LocalDateTime.now() + "\n" +
         "Nombre: " + result.get("countryName")  + "\n" +
@@ -115,12 +123,15 @@ public class IpInformationSystem {
             mostFarCountry = repository.getMostFarCountry();
         } catch(MongoClientException e){
             System.out.println("Por favor consulte nuevamente");
-        };
+        }
 
         return mostFarCountry;
     }
 
-    public String showMostFarCountry() {
+    public String showMostFarCountry() throws InterruptedException {
+        if(repository.isInMemory())
+            Thread.sleep(2000);
+
         Map<String, String> mostFarCountryInformation=  this.getMostFarCountry();
 
         String information = mostFarCountryInformation.get("Info");
@@ -141,11 +152,13 @@ public class IpInformationSystem {
             leastFarCountry = repository.getLeastFarCountry();
         } catch(MongoClientException e){
             System.out.println("Por favor consulte nuevamente");
-        };
+        }
 
         return leastFarCountry;
     }
-    public String showLeastFarCountry() {
+    public String showLeastFarCountry() throws InterruptedException {
+        if(repository.isInMemory())
+            Thread.sleep(2000);
         Map<String, String> leastFarCountryInformation=  this.getLeastFarCountry();
 
         String information = leastFarCountryInformation.get("Info");
@@ -168,11 +181,13 @@ public class IpInformationSystem {
             averageDistance = repository.getAverageDistance();
         } catch(MongoClientException e){
             System.out.println("Por favor consulte nuevamente");
-        };
+        }
 
         return averageDistance;
     }
-    public String showAverageDistance() {
+    public String showAverageDistance() throws InterruptedException {
+        if(repository.isInMemory())
+            Thread.sleep(2000);
         Map<String, String> averageDistance=  this.getAverageDistance();
 
         String information = averageDistance.get("Info");
@@ -184,7 +199,7 @@ public class IpInformationSystem {
     }
 
     public void addToQueue(IpInformation result) throws IOException, TimeoutException {
-        (new IpInformationQueue("ip_information", "localhost", 5672)).addToQueue(result);
+        messageBroker.addToQueue(result);
     }
 
     public String lastPersistedIpTimestamp() {
@@ -193,7 +208,7 @@ public class IpInformationSystem {
             lastPersistedIpTimestamp = repository.lastPersistedIpTimestamp();
         } catch(MongoClientException e){
             System.out.println("Por favor consulte nuevamente");
-        };
+        }
         return lastPersistedIpTimestamp;
     }
 
@@ -203,5 +218,9 @@ public class IpInformationSystem {
 
     public Map<String, String> getResult() {
         return result;
+    }
+
+    public IpInformationQueueInterface getMessageBroker() {
+        return messageBroker;
     }
 }

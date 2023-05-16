@@ -2,18 +2,13 @@ package Infrastructure.Repositories;
 
 import Interfaces.IpInformationRespositoryInterface;
 import Model.IpInformation;
-import Model.IpInformationSystem;
 import com.eclipsesource.json.JsonObject;
 import com.mongodb.MongoClientException;
-import com.mongodb.MongoSecurityException;
 import com.mongodb.client.*;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.*;
 
 import static com.mongodb.client.model.Filters.eq;
@@ -102,6 +97,11 @@ public class IpInformationInMongoDB  implements IpInformationRespositoryInterfac
         return result.get("timestamp").toString();
     }
 
+    @Override
+    public boolean isInMemory() {
+        return false;
+    }
+
     public void saveFromJson(JsonObject object){
         save(new IpInformation(
                 object.getString("countryName",""),
@@ -119,15 +119,18 @@ public class IpInformationInMongoDB  implements IpInformationRespositoryInterfac
 
         Map<String, String> result = ipInformation.result();
 
-        Document ipInformationFound = collection.find(new Document("country_code", result.get("countryIsoCode"))).first();
-
-        int invocations = 1;
-
-        if(ipInformationFound != null){
-            updateEstimation(result, ipInformationFound);
-        }else{
+        try{
+            Document ipInformationFound = collection.find(new Document("country_code", result.get("countryIsoCode"))).first();
+            if(ipInformationFound == null){
+                int invocations = 1;
+                insertEstimation(result, invocations);
+            }else
+                updateEstimation(result, ipInformationFound);
+        } catch(MongoClientException e){
+            int invocations = 1;
             insertEstimation(result, invocations);
         }
+
     }
 
     private void insertEstimation(Map<String, String> result, int invocations) {

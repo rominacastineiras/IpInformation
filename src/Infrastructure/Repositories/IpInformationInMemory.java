@@ -10,8 +10,8 @@ import java.util.*;
 import static java.lang.Integer.parseInt;
 
 public class IpInformationInMemory implements IpInformationRespositoryInterface {
-    private Map<String, Map<String, String>> collectionMap = new HashMap<>();
-    private List<IpInformation> collection = new ArrayList<>();
+    private final Map<String, Map<String, String>> collectionMap = new HashMap<>();
+    private final List<IpInformation> collection = new ArrayList<>();
     @Override
     public void connectIfNecessary() {
     }
@@ -27,13 +27,13 @@ public class IpInformationInMemory implements IpInformationRespositoryInterface 
         }
     }
 
-    class DistanceComparator implements java.util.Comparator<IpInformation>{
+    static class DistanceComparator implements java.util.Comparator<IpInformation>{
         @Override
         public int compare(IpInformation a, IpInformation b) {
             return a.distanceToBuenosAires() - b.distanceToBuenosAires();
         }
     }
-    class DistanceComparatorReverse implements java.util.Comparator<IpInformation>{
+    static class DistanceComparatorReverse implements java.util.Comparator<IpInformation>{
         @Override
         public int compare(IpInformation a, IpInformation b) {
             return b.distanceToBuenosAires() - a.distanceToBuenosAires();
@@ -43,12 +43,11 @@ public class IpInformationInMemory implements IpInformationRespositoryInterface 
     @Override
     public Map<String, String> getMostFarCountry() {
 
-        Collections.sort(collection, new DistanceComparator());
+        collection.sort(new DistanceComparatorReverse());
         Map<String, String> map = new HashMap<>();
         Optional<IpInformation> ipInformation = collection.stream().findFirst();
 
-        if(ipInformation.isPresent())
-            createEstimationRelations(ipInformation.get(), map);
+        ipInformation.ifPresent(information -> createEstimationRelations(information, map));
 
         return map;
     }
@@ -56,12 +55,11 @@ public class IpInformationInMemory implements IpInformationRespositoryInterface 
     @Override
     public Map<String, String> getLeastFarCountry() {
 
-        Collections.sort(collection, new DistanceComparatorReverse());
+        collection.sort(new DistanceComparator());
         Map<String, String> map = new HashMap<>();
         Optional<IpInformation> ipInformation = collection.stream().findFirst();
 
-        if(ipInformation.isPresent())
-            createEstimationRelations(ipInformation.get(), map);
+        ipInformation.ifPresent(information -> createEstimationRelations(information, map));
 
         return map;
     }
@@ -86,6 +84,11 @@ public class IpInformationInMemory implements IpInformationRespositoryInterface 
         return LocalTime.now().toString();
     }
 
+    @Override
+    public boolean isInMemory() {
+        return true;
+    }
+
     public void saveFromJson(JsonObject object){
         save(new IpInformation(
                 object.getString("countryName",""),
@@ -103,14 +106,11 @@ public class IpInformationInMemory implements IpInformationRespositoryInterface 
 
         Map<String, String> result = ipInformation.result();
 
-        Map<String, String> ipInformationFound = collectionMap.get("country_code");
+        Map<String, String> ipInformationFound = collectionMap.get(ipInformation.getCountryCode());
 
         int invocations = 1;
 
         if(ipInformationFound != null){
-            Map<String, String> newInformation = new HashMap<>();
-
-           ipInformationFound.put("invocations", String.valueOf(invocations));
             updateEstimation(result, ipInformationFound);
         }else{
             insertEstimation(result, invocations);

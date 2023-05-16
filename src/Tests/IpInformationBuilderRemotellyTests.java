@@ -2,7 +2,6 @@ package Tests;
 
 import Model.IpInformation;
 import Model.IpInformationBuilder;
-import Model.IpInformationSystem;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 
@@ -10,9 +9,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 
-public class IpInformationRemotelyTests {
+public class IpInformationBuilderRemotellyTests {
 
    @Test
     public void shouldRetrieveCountryName(){
@@ -29,7 +29,7 @@ public class IpInformationRemotelyTests {
     private Properties getConfiguration() {
         Properties configuration = new Properties();
         try{
-            configuration.load(new FileReader(new File(IpInformationSystem.getConfigurationFileName()).getAbsolutePath()));
+            configuration.load(new FileReader(new File("configForTestsInMongoDB.properties").getAbsolutePath()));
         }catch(IOException error){
             configuration =  new Properties();
         }
@@ -144,8 +144,29 @@ public class IpInformationRemotelyTests {
       //                informationBuilder.setCountryTimeZone(); timezone.current_time
 
       Assertions.assertTrue(ipInformation.distanceToBuenosAiresIs(9017));
-      Assertions.assertTrue(ipInformation.languagesAre(Arrays.asList("English")));
-      Assertions.assertTrue(ipInformation.quoteAgainstDollarIs(1));
+      Assertions.assertTrue(ipInformation.languagesAre(List.of("English")));
+      Assertions.assertTrue(ipInformation.quoteAgainstDollarIs(1.0));
+
+  }  @Test
+  public void cannotRetrieveQuoteAgainstDollarIfCurrencyIsNotSet() { //TODO: este valor varia con el tiempo, es un test que va a fallar
+      IpInformationBuilder informationBuilder = IpInformationBuilder.basedOnConfiguration(this.getConfiguration());
+      informationBuilder.setIp("166.171.248.255");
+      informationBuilder.setCountryName();
+      informationBuilder.setCountryIsoCode();
+      //        informationBuilder.setCountryTimezone();
+      informationBuilder.setDistanceToBuenosAires();
+      informationBuilder.setLanguages();
+      informationBuilder.setQuoteAgainstDollar();
+
+      IpInformation ipInformation = informationBuilder.build();
+      Assertions.assertTrue(ipInformation.countryNameIs("United States"));
+      Assertions.assertTrue(ipInformation.countryIsoCodeIs("US"));
+      Assertions.assertTrue(ipInformation.countryCurrencyIs("USD"));
+      //                informationBuilder.setCountryTimeZone(); timezone.current_time
+
+      Assertions.assertTrue(ipInformation.distanceToBuenosAiresIs(9017));
+      Assertions.assertTrue(ipInformation.languagesAre(List.of("English")));
+      Assertions.assertTrue(ipInformation.quoteAgainstDollarIs(0.00));
 
   }
 

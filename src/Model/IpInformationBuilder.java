@@ -11,7 +11,7 @@ import java.util.*;
 
 public class IpInformationBuilder {
     private String ip;
-    private Properties configuration = new Properties();
+    private final Properties configuration;
     private final JsonObject defaultInformation;
 
     private final ApiIntanceProvider apiInstanceProvider;
@@ -24,7 +24,7 @@ public class IpInformationBuilder {
             .add("timezone",NODATA)
             .add("longitude",0.00)
             .add("latitude",0.00)
-            .add("languages", NODATA)
+            .add("language", NODATA)
             .add("quoteAgainstDollar", 0.00);
     private String countryName;
     private String countryIsoCode;
@@ -48,7 +48,7 @@ public class IpInformationBuilder {
     private IpInformationBuilder(Properties configuration, JsonObject defaultJson) {
         defaultInformation = defaultJson;
 
-        apiInstanceProvider = new ApiIntanceProvider(configuration);
+        apiInstanceProvider = new ApiIntanceProvider(configuration, defaultInformation);
         this.configuration = configuration;
 
     }
